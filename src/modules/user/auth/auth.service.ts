@@ -20,7 +20,7 @@ export class AuthService {
     if (!user) {
       throw new NotFoundException(`User ${username} not found.`);
     } else if (user.password !== hash(user.salt + password)) {
-      throw new BadRequestException('Wring password');
+      throw new BadRequestException('Wrong password');
     } else {
       user.lastLoginTime = new Date();
       return {

@@ -32,7 +32,7 @@ $ npm install
 
 Copy file <i>example.env</i>&nbsp; to <i>.env</i> and adjust environmental variables.
 
-In postgres create new table with the name from <i>.env</i>&nbsp; file.
+In postgres create new database with the name from <i>.env</i>&nbsp; file.
 
 ## Running the app
 

@@ -1,7 +1,8 @@
 import { randomBytes } from 'crypto';
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { hash } from '../../utils/hash';
+import { ProjectToUser } from '../project/project-to-user.entity';
 import { USER_ROLE } from './user-role.enum';
 import { VUser } from './user.validation';
 
@@ -36,6 +37,12 @@ export class User {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @OneToMany(
+    () => ProjectToUser,
+    ptu => ptu.user,
+  )
+  projects: ProjectToUser[];
 
   constructor(user?: VUser) {
     if (user) {

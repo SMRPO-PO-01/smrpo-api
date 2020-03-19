@@ -7,7 +7,7 @@ import { User } from '../modules/user/user.entity';
 export class AdminGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const req = context.switchToHttp().getRequest();
-    const user: User = req.uest;
+    const user: User = req.user;
 
     if (!user || user.role !== USER_ROLE.ADMIN) {
       throw new ForbiddenException('This route is admin only.');

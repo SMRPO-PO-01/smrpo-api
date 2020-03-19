@@ -3,6 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { AdminController } from './admin.controller';
 import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
 import { JwtStrategy } from './auth/jwt.strategy';
@@ -16,7 +17,7 @@ import { UserService } from './user.service';
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({ secret: process.env.JWT_SECRET }),
   ],
-  controllers: [UserController, AuthController],
+  controllers: [UserController, AdminController, AuthController],
   providers: [UserService, AuthService, JwtStrategy],
 })
 export class UserModule {}

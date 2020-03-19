@@ -9,7 +9,7 @@ import { UserService } from './user.service';
 import { VUser } from './user.validation';
 
 @Controller('admin')
-@UseGuards(AuthGuard(), AdminGuard)
+@UseGuards(AuthGuard('jwt'), AdminGuard)
 export class AdminController {
   constructor(private userService: UserService) {}
 

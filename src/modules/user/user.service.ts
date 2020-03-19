@@ -18,4 +18,8 @@ export class UserService {
 
     return await this.userRepo.save(new User(data));
   }
+
+  async findByIds(ids: number[]) {
+    return await this.userRepo.findByIds(ids);
+  }
 }

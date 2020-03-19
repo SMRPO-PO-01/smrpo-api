@@ -1,7 +1,8 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 
+import { ILike } from '../../utils/ilike';
 import { Pagination } from '../../validators/pagination';
 import { User } from './user.entity';
 import { VUser } from './user.validation';
@@ -16,10 +17,10 @@ export class UserService {
       take,
       order: { id: 'ASC' },
       where: [
-        { firstName: Like(`%${search}%`) },
-        { lastName: Like(`%${search}%`) },
-        { username: Like(`%${search}%`) },
-        { email: Like(`%${search}%`) },
+        { firstName: ILike(`%${search}%`) },
+        { lastName: ILike(`%${search}%`) },
+        { username: ILike(`%${search}%`) },
+        { email: ILike(`%${search}%`) },
       ],
     });
   }

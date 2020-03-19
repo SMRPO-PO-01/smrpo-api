@@ -1,7 +1,8 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Connection, In, Like, Repository } from 'typeorm';
+import { Connection, In, Repository } from 'typeorm';
 
+import { ILike } from '../../utils/ilike';
 import { Pagination } from '../../validators/pagination';
 import { User } from '../user/user.entity';
 import { UserService } from '../user/user.service';
@@ -24,7 +25,7 @@ export class ProjectService {
       take,
       skip,
       where: {
-        title: Like(`%${search}%`),
+        title: ILike(`%${search}%`),
       },
       relations: ['users', 'users.user'],
     });
@@ -38,7 +39,7 @@ export class ProjectService {
       take,
       skip,
       where: {
-        title: Like(`%${search}%`),
+        title: ILike(`%${search}%`),
         id: In(projectsToUser.map(p => p.projectId)),
       },
       relations: ['users', 'users.user'],

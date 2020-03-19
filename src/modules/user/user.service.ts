@@ -15,7 +15,6 @@ export class UserService {
         `User with username ${data.username} already exists.`,
       );
     }
-    //
     return await this.userRepo.save(new User(data));
   }
 }

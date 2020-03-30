@@ -28,9 +28,6 @@ export class TaskController {
     @Query('user', new OptionalParseIntPipe()) user: number,
     @Query('project', new OptionalParseIntPipe()) project: number,
   ) {
-    console.log('User ' + user);
-    console.log('Project ' + project);
-    console.log('Search ' + search);
     return (
       await this.taskService.listAll(pagination, search, user, project)
     ).map(task => new DTask(task));

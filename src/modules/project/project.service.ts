@@ -80,6 +80,16 @@ export class ProjectService {
     }
   }
 
+  async findById(id: number) {
+    const project = await this.projectRepo.findOne(id, {
+      relations: ['users'],
+    });
+    if (!project) {
+      throw new NotFoundException(`Project with id ${id} not found.`);
+    }
+    return project;
+  }
+
   private async validateProjectDataAndGetUsers(data: VProject) {
     if (await this.projectRepo.findOne({ title: data.title })) {
       throw new ConflictException(

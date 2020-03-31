@@ -14,12 +14,7 @@ export class TaskService {
     return await this.taskRepo.findOne(id);
   }
 
-  async listAll(
-    { skip, take }: Pagination,
-    search: string,
-    userId: number,
-    projectId: number,
-  ) {
+  async listAll({ skip, take }: Pagination, search: string, userId: number, projectId: number) {
     let where = [
       { title: ILike(`%${search}%`) },
       { description: ILike(`%${search}%`) },
@@ -28,11 +23,9 @@ export class TaskService {
     let filter: any = {};
     if (userId) {
       filter.userId = userId;
-      // filter = { ...filter, userId: new FindOperator('equal', userId) };
     }
     if (projectId) {
       filter.projectId = projectId;
-      // filter = { ...filter, projectId: new FindOperator('equal', projectId) };
     }
     where = where.map(elem => ({
       ...elem,

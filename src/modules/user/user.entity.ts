@@ -1,11 +1,5 @@
 import { randomBytes } from 'crypto';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { hash } from '../../utils/hash';
 import { ProjectToUser } from '../project/project-to-user.entity';

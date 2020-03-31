@@ -27,9 +27,7 @@ export class UserService {
 
   async createUser(data: VUser) {
     if (await this.userRepo.findOne({ username: data.username })) {
-      throw new ConflictException(
-        `User with username ${data.username} already exists.`,
-      );
+      throw new ConflictException(`User with username ${data.username} already exists.`);
     }
 
     return await this.userRepo.save(new User(data));

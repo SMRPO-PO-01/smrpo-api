@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Query,
-  UseGuards,
-  Put,
-  Delete,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards, Put, Delete } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { TaskService } from './task.service';
 import { Pagination } from '../../validators/pagination';
@@ -28,9 +19,9 @@ export class TaskController {
     @Query('user', new OptionalParseIntPipe()) user: number,
     @Query('project', new OptionalParseIntPipe()) project: number,
   ) {
-    return (
-      await this.taskService.listAll(pagination, search, user, project)
-    ).map(task => new DTask(task));
+    return (await this.taskService.listAll(pagination, search, user, project)).map(
+      task => new DTask(task),
+    );
   }
 
   @Post('create')

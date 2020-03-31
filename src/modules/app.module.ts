@@ -6,12 +6,6 @@ import { SprintModule } from './sprint/sprint.module';
 import { UserModule } from './user/user.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forRoot(),
-    UserModule,
-    ProjectModule,
-    SprintModule,
-    TaskModule,
-  ],
+  imports: [TypeOrmModule.forRoot(), UserModule, ProjectModule, SprintModule, TaskModule],
 })
 export class AppModule {}

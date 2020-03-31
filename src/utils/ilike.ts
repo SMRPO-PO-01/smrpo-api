@@ -10,11 +10,7 @@ class FindOperatorWithExtras<T> extends FindOperator<T> {
     super(type as any, value, useParameter, multipleParameters);
   }
 
-  public toSql(
-    connection: Connection,
-    aliasPath: string,
-    parameters: string[],
-  ): string {
+  public toSql(connection: Connection, aliasPath: string, parameters: string[]): string {
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     if (this._type === 'ilike') {
@@ -25,8 +21,6 @@ class FindOperatorWithExtras<T> extends FindOperator<T> {
   }
 }
 
-export function ILike<T>(
-  value: T | FindOperator<T>,
-): FindOperatorWithExtras<T> {
+export function ILike<T>(value: T | FindOperator<T>): FindOperatorWithExtras<T> {
   return new FindOperatorWithExtras('ilike', value);
 }

@@ -13,16 +13,14 @@ export class VSprint {
   project: Project;
 
   @IsDate({
-    message: args =>
-      `${args.property} must be valid javascript string representation of Date`,
+    message: args => `${args.property} must be valid javascript string representation of Date`,
   })
   @MinDateFun(() => new Date())
   @Transform(str => new Date(str))
   startDate: Date;
 
   @IsDate({
-    message: args =>
-      `${args.property} must be valid javascript string representation of Date`,
+    message: args => `${args.property} must be valid javascript string representation of Date`,
   })
   @MinDateFun(o => o.startDate)
   @Transform(str => new Date(str))

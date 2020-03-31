@@ -25,12 +25,14 @@ export class TaskService {
       { description: ILike(`%${search}%`) },
       { state: ILike(`%${search}%`) },
     ];
-    let filter = {};
+    let filter: any = {};
     if (userId) {
-      filter = { ...filter, userId: new FindOperator('equal', userId) };
+      filter.userId = userId;
+      // filter = { ...filter, userId: new FindOperator('equal', userId) };
     }
     if (projectId) {
-      filter = { ...filter, projectId: new FindOperator('equal', projectId) };
+      filter.projectId = projectId;
+      // filter = { ...filter, projectId: new FindOperator('equal', projectId) };
     }
     where = where.map(elem => ({
       ...elem,

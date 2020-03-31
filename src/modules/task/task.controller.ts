@@ -13,8 +13,8 @@ import { TaskService } from './task.service';
 import { Pagination } from '../../validators/pagination';
 import { DTask } from './task.dto';
 import { VTask, VTaskOpt } from './task.validation';
-import { OptionalParseIntPipe } from '../../validators/optional';
-import { EmptySearchPipe } from '../../validators/search';
+import { OptionalParseIntPipe } from '../../validators/integer';
+import { DefaultStringPipe } from '../../validators/string';
 
 @Controller('task')
 @UseGuards(AuthGuard('jwt'))
@@ -24,7 +24,7 @@ export class TaskController {
   @Get('all')
   async listAll(
     @Query() pagination: Pagination,
-    @Query('search', new EmptySearchPipe()) search: string,
+    @Query('search', new DefaultStringPipe()) search: string,
     @Query('user', new OptionalParseIntPipe()) user: number,
     @Query('project', new OptionalParseIntPipe()) project: number,
   ) {

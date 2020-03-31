@@ -15,18 +15,15 @@ export class VTask {
   state: TASK_STATE;
 
   @IsInt()
-  @IsNotEmpty()
   projectId: number;
 
   @IsOptional()
   @IsInt()
-  @IsNotEmpty()
   userId?: number;
 }
 
 export class VTaskOpt {
   @IsInt()
-  @IsNotEmpty()
   id: number;
 
   @IsOptional()
@@ -36,7 +33,6 @@ export class VTaskOpt {
 
   @IsOptional()
   @IsString()
-  @IsNotEmpty()
   description?: string;
 
   @IsOptional()
@@ -45,11 +41,9 @@ export class VTaskOpt {
 
   @IsOptional()
   @IsInt()
-  @IsNotEmpty()
   projectId?: number;
 
   @IsOptional()
   @IsInt()
-  @IsNotEmpty()
   userId?: number;
 }

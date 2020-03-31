@@ -11,7 +11,7 @@ import { VUser } from './user.validation';
 export class UserService {
   constructor(@InjectRepository(User) private userRepo: Repository<User>) {}
 
-  async listAll({ skip, take }: Pagination, search: string) {
+  async listAll({ skip, take }: Pagination, search = '') {
     return await this.userRepo.find({
       skip,
       take,

@@ -7,9 +7,7 @@ import { VSprint } from './sprint.validation';
 
 @Injectable()
 export class SprintService {
-  constructor(
-    @InjectRepository(Sprint) private sprintRepo: Repository<Sprint>,
-  ) {}
+  constructor(@InjectRepository(Sprint) private sprintRepo: Repository<Sprint>) {}
 
   async createSprint(data: VSprint) {
     await this.checkOverlaping(data);
@@ -24,9 +22,7 @@ export class SprintService {
         startDate: LessThanOrEqual(data.endDate),
       })
     ) {
-      throw new ConflictException(
-        'Sprint overlaps with one or more existing sprints',
-      );
+      throw new ConflictException('Sprint overlaps with one or more existing sprints');
     }
   }
 }

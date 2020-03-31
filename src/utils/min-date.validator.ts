@@ -1,9 +1,6 @@
 import { registerDecorator, ValidationArguments, ValidationOptions } from 'class-validator';
 
-export function MinDateFun(
-  fun: (o: any) => Date,
-  validationOptions?: ValidationOptions,
-) {
+export function MinDateFun(fun: (o: any) => Date, validationOptions?: ValidationOptions) {
   return function(object: any, propertyName: string) {
     registerDecorator({
       name: 'minDateFunc',

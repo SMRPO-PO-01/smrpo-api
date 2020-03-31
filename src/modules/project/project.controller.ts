@@ -22,10 +22,7 @@ export class ProjectController {
 
   @Get('all')
   @UseGuards(AdminGuard)
-  async listAll(
-    @Query() pagination: Pagination,
-    @Query('search') search: string,
-  ) {
+  async listAll(@Query() pagination: Pagination, @Query('search') search: string) {
     return (await this.projectService.listAll(pagination, search)).map(
       project => new DProject(project),
     );
@@ -37,8 +34,8 @@ export class ProjectController {
     @Query('search') search: string,
     @AuthUser() user: User,
   ) {
-    return (
-      await this.projectService.getMyProjects(pagination, search, user)
-    ).map(project => new DProject(project));
+    return (await this.projectService.getMyProjects(pagination, search, user)).map(
+      project => new DProject(project),
+    );
   }
 }

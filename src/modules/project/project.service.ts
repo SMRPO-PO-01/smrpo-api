@@ -33,6 +33,9 @@ export class ProjectService {
 
   async getMyProjects({ skip, take }: Pagination, search: string, user: User) {
     const projectsToUser = await this.ptuRepo.find({ userId: user.id });
+    if (!projectsToUser.length) {
+      return [];
+    }
 
     return await this.projectRepo.find({
       order: { id: 'DESC' },

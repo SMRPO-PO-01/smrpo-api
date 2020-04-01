@@ -18,13 +18,17 @@ export class UserService {
       skip,
       take,
       order: { id: 'ASC' },
-      where: searchArr
-        .map(str => [
-          { firstName: ILike(`%${str}%`) },
-          { lastName: ILike(`%${str}%`) },
-          { username: ILike(`%${str}%`) },
-        ])
-        .flat(),
+      where: [
+        { firstName: ILike(`%${search}%`) },
+        { lastName: ILike(`%${search}%`) },
+        { username: ILike(`%${search}%`) },
+        ...(searchArr.length > 1
+          ? [
+              { firstName: ILike(`%${searchArr[0]}%`), lastName: ILike(`%${searchArr[1]}%`) },
+              { firstName: ILike(`%${searchArr[1]}%`), lastName: ILike(`%${searchArr[0]}%`) },
+            ]
+          : []),
+      ],
     });
   }
 

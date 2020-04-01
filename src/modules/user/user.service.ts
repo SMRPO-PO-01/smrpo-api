@@ -12,16 +12,19 @@ export class UserService {
   constructor(@InjectRepository(User) private userRepo: Repository<User>) {}
 
   async listAll({ skip, take }: Pagination, search = '') {
+    const searchArr = search.split(' ');
+
     return await this.userRepo.find({
       skip,
       take,
       order: { id: 'ASC' },
-      where: [
-        { firstName: ILike(`%${search}%`) },
-        { lastName: ILike(`%${search}%`) },
-        { username: ILike(`%${search}%`) },
-        { email: ILike(`%${search}%`) },
-      ],
+      where: searchArr
+        .map(str => [
+          { firstName: ILike(`%${str}%`) },
+          { lastName: ILike(`%${str}%`) },
+          { username: ILike(`%${str}%`) },
+        ])
+        .flat(),
     });
   }
 

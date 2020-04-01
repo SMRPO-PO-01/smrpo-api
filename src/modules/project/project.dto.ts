@@ -10,9 +10,12 @@ export class DProject {
   constructor(project: Project) {
     this.id = project.id;
     this.title = project.title;
-    this.users = project.users.map(({ user, role }) => ({
-      ...new DUser(user),
-      projectRole: role,
-    }));
+
+    if (project.users) {
+      this.users = project.users.map(({ user, role, userId }) => ({
+        ...(user ? new DUser(user) : { id: userId }),
+        projectRole: role,
+      }));
+    }
   }
 }

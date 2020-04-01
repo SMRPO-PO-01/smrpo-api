@@ -13,13 +13,8 @@ export class AdminController {
   constructor(private userService: UserService) {}
 
   @Get('users')
-  async listAll(
-    @Query() pagination: Pagination,
-    @Query('search') search: string,
-  ) {
-    return (await this.userService.listAll(pagination, search)).map(
-      user => new DUser(user),
-    );
+  async listAll(@Query() pagination: Pagination, @Query('search') search: string) {
+    return (await this.userService.listAll(pagination, search)).map(user => new DUser(user));
   }
 
   @Post('add-user')

@@ -67,9 +67,7 @@ export class ProjectService {
     try {
       project = await queryRunner.manager.save(new Project(data));
 
-      projectUsers = users.map(
-        ({ user, role }) => new ProjectToUser({ project, user, role }),
-      );
+      projectUsers = users.map(({ user, role }) => new ProjectToUser({ project, user, role }));
 
       await queryRunner.manager.save(projectUsers);
 
@@ -83,11 +81,19 @@ export class ProjectService {
     }
   }
 
+  async findById(id: number) {
+    const project = await this.projectRepo.findOne(id, {
+      relations: ['users'],
+    });
+    if (!project) {
+      throw new NotFoundException(`Project with id ${id} not found.`);
+    }
+    return project;
+  }
+
   private async validateProjectDataAndGetUsers(data: VProject) {
     if (await this.projectRepo.findOne({ title: data.title })) {
-      throw new ConflictException(
-        `Project with title ${data.title} already exists.`,
-      );
+      throw new ConflictException(`Project with title ${data.title} already exists.`);
     }
 
     const users = await this.userService.findByIds(data.users.map(u => u.id));

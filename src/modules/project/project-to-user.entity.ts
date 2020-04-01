@@ -27,11 +27,7 @@ export class ProjectToUser {
   )
   user: User;
 
-  constructor(data?: {
-    project: Project;
-    user: User;
-    role: PROJECT_USER_ROLE;
-  }) {
+  constructor(data?: { project: Project; user: User; role: PROJECT_USER_ROLE }) {
     if (data) {
       this.project = data.project;
       this.user = data.user;

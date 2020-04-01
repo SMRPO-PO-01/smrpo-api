@@ -5,6 +5,7 @@ import { hash } from '../../utils/hash';
 import { ProjectToUser } from '../project/project-to-user.entity';
 import { USER_ROLE } from './user-role.enum';
 import { VUser } from './user.validation';
+import { Task } from '../task/task.entity';
 
 @Entity()
 export class User {
@@ -43,6 +44,13 @@ export class User {
     ptu => ptu.user,
   )
   projects: ProjectToUser[];
+
+  @OneToMany(
+    () => Task,
+    task => task.user,
+    { nullable: true },
+  )
+  tasks: Task[];
 
   constructor(user?: VUser) {
     if (user) {

@@ -13,7 +13,7 @@ export class SprintController {
   constructor(private sprintService: SprintService) {}
 
   @Post()
-  @PTURoles(PROJECT_USER_ROLE.PRODUCT_OWNER)
+  @PTURoles(PROJECT_USER_ROLE.SCURM_MASTER)
   async createSprint(@Body() data: VSprint) {
     return new DSprint(await this.sprintService.createSprint(data));
   }

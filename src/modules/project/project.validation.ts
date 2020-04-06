@@ -1,14 +1,7 @@
 import { Type } from 'class-transformer';
-import {
-  ArrayMinSize,
-  IsArray,
-  IsIn,
-  IsInt,
-  IsNotEmpty,
-  IsString,
-  ValidateNested,
-} from 'class-validator';
+import { ArrayMinSize, IsArray, IsIn, IsInt, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
 
+import { ExactlyOneRole } from '../../utils/has-exactly-one.validator';
 import { PROJECT_USER_ROLE } from './project-user-role.enum';
 
 class VProjectUser {
@@ -27,6 +20,8 @@ export class VProject {
   @IsArray()
   @ValidateNested({ each: true })
   @ArrayMinSize(1)
+  @ExactlyOneRole(PROJECT_USER_ROLE.PROJECT_OWNER)
+  @ExactlyOneRole(PROJECT_USER_ROLE.SCRUM_MASTER)
   @Type(() => VProjectUser)
   users: VProjectUser[];
 }

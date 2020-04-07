@@ -1,9 +1,8 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Sprint } from '../sprint/sprint.entity';
-import { ProjectToUser } from './project-to-user.entity';
-import { VProject } from './project.validation';
 import { Task } from '../task/task.entity';
+import { User } from '../user/user.entity';
 
 @Entity()
 export class Project {
@@ -13,11 +12,26 @@ export class Project {
   @Column({ unique: true })
   title: string;
 
-  @OneToMany(
-    () => ProjectToUser,
-    ptu => ptu.project,
+  @ManyToOne(
+    () => User,
+    u => u.projects_sm,
+    { nullable: false, onDelete: 'CASCADE' },
   )
-  users: ProjectToUser[];
+  scrumMaster: User;
+
+  @ManyToOne(
+    () => User,
+    u => u.projects_po,
+    { nullable: false, onDelete: 'CASCADE' },
+  )
+  projectOwner: User;
+
+  @JoinTable()
+  @ManyToMany(
+    () => User,
+    u => u.projects,
+  )
+  developers: User[];
 
   @OneToMany(
     () => Task,
@@ -32,9 +46,17 @@ export class Project {
   )
   sprints: Sprint[];
 
-  constructor(project?: VProject) {
+  constructor(project?: {
+    title: string;
+    developers: User[];
+    scrumMaster: User;
+    projectOwner: User;
+  }) {
     if (project) {
       this.title = project.title;
+      this.scrumMaster = project.scrumMaster;
+      this.projectOwner = project.projectOwner;
+      this.developers = project.developers;
     }
   }
 }

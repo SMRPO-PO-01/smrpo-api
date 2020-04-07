@@ -1,11 +1,11 @@
 import { randomBytes } from 'crypto';
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { hash } from '../../utils/hash';
-import { ProjectToUser } from '../project/project-to-user.entity';
+import { Project } from '../project/project.entity';
+import { Task } from '../task/task.entity';
 import { USER_ROLE } from './user-role.enum';
 import { VUser } from './user.validation';
-import { Task } from '../task/task.entity';
 
 @Entity()
 export class User {
@@ -40,10 +40,22 @@ export class User {
   createdAt: Date;
 
   @OneToMany(
-    () => ProjectToUser,
-    ptu => ptu.user,
+    () => Project,
+    p => p.scrumMaster,
   )
-  projects: ProjectToUser[];
+  projects_sm: Project[];
+
+  @OneToMany(
+    () => Project,
+    p => p.projectOwner,
+  )
+  projects_po: Project[];
+
+  @ManyToMany(
+    () => Project,
+    p => p.developers,
+  )
+  projects: Project[];
 
   @OneToMany(
     () => Task,

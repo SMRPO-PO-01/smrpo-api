@@ -29,13 +29,7 @@ export class ProjectController {
   }
 
   @Get('my')
-  async getMyProjects(
-    @Query() pagination: Pagination,
-    @Query('search') search: string,
-    @AuthUser() user: User,
-  ) {
-    return (await this.projectService.getMyProjects(pagination, search, user)).map(
-      project => new DProject(project),
-    );
+  async getMyProjects(@AuthUser() user: User) {
+    return (await this.projectService.getMyProjects(user)).map(project => new DProject(project));
   }
 }

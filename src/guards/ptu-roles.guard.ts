@@ -1,15 +1,14 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  ForbiddenException,
-  Injectable,
-  SetMetadata,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable, SetMetadata } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
-import { PROJECT_USER_ROLE } from '../modules/project/project-user-role.enum';
 import { ProjectService } from '../modules/project/project.service';
 import { User } from '../modules/user/user.entity';
+
+export enum PROJECT_USER_ROLE {
+  PROJECT_OWNER = 'PROJECT_OWNER',
+  SCRUM_MASTER = 'SCRUM_MASTER',
+  DEVELOPER = 'DEVELOPER',
+}
 
 @Injectable()
 export class PTURolesGuard implements CanActivate {
@@ -30,11 +29,18 @@ export class PTURolesGuard implements CanActivate {
       return true;
     }
 
-    const project = await this.projectService.findById(body.projectId);
+    const project = await this.projectService.findById(body.projectId, {
+      relations: ['developers', 'scrumMaster', 'projectOwner'],
+    });
 
     body.project = project;
 
-    if (project.users.some(pu => pu.userId === user.id && roles.includes(pu.role))) {
+    if (
+      (roles.includes(PROJECT_USER_ROLE.DEVELOPER) &&
+        project.developers.some(dev => dev.id === user.id)) ||
+      (roles.includes(PROJECT_USER_ROLE.PROJECT_OWNER) && project.projectOwner.id === user.id) ||
+      (roles.includes(PROJECT_USER_ROLE.SCRUM_MASTER) && project.scrumMaster.id === user.id)
+    ) {
       return true;
     } else {
       throw new ForbiddenException(

@@ -1,8 +1,7 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
-import { PTURoles, PTURolesGuard } from '../../guards/ptu-roles.guard';
-import { PROJECT_USER_ROLE } from '../project/project-user-role.enum';
+import { PROJECT_USER_ROLE, PTURoles, PTURolesGuard } from '../../guards/ptu-roles.guard';
 import { DSprint } from './sprint.dto';
 import { SprintService } from './sprint.service';
 import { VSprint } from './sprint.validation';

@@ -1,12 +1,11 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Connection, In, Repository } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
 
 import { ILike } from '../../utils/ilike';
 import { Pagination } from '../../validators/pagination';
 import { User } from '../user/user.entity';
 import { UserService } from '../user/user.service';
-import { ProjectToUser } from './project-to-user.entity';
 import { Project } from './project.entity';
 import { VProject } from './project.validation';
 
@@ -14,8 +13,6 @@ import { VProject } from './project.validation';
 export class ProjectService {
   constructor(
     @InjectRepository(Project) private projectRepo: Repository<Project>,
-    @InjectRepository(ProjectToUser) private ptuRepo: Repository<ProjectToUser>,
-    private connection: Connection,
     private userService: UserService,
   ) {}
 
@@ -31,60 +28,19 @@ export class ProjectService {
     });
   }
 
-  async getMyProjects({ skip, take }: Pagination, search: string, user: User) {
-    const projectsToUser = await this.ptuRepo.find({ userId: user.id });
-    if (!projectsToUser.length) {
-      return [];
-    }
-
-    return await this.projectRepo.find({
-      order: { id: 'DESC' },
-      take,
-      skip,
-      where: {
-        title: ILike(`%${search}%`),
-        id: In(projectsToUser.map(p => p.projectId)),
-      },
-      relations: ['users', 'users.user'],
-    });
+  async getMyProjects(user: User) {
+    return await this.userService.usersProjects(user.id);
   }
 
   async createProject(data: VProject) {
     const users = await this.validateProjectDataAndGetUsers(data);
 
-    /**
-     * Transaction is used, because more than one atomic operation happens.
-     * So if saving project succeeds, but saving projectUsers somehow fails,
-     * the whole transaction is reverted (meaning successfully saved project is deleted from db)
-     */
-    const queryRunner = this.connection.createQueryRunner();
-
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    let project, projectUsers;
-
-    try {
-      project = await queryRunner.manager.save(new Project(data));
-
-      projectUsers = users.map(({ user, role }) => new ProjectToUser({ project, user, role }));
-
-      await queryRunner.manager.save(projectUsers);
-
-      await queryRunner.commitTransaction();
-    } catch (err) {
-      await queryRunner.rollbackTransaction();
-    } finally {
-      await queryRunner.release();
-
-      return { ...project, users: projectUsers };
-    }
+    const project = new Project({ ...data, ...users });
+    return await this.projectRepo.save(project);
   }
 
-  async findById(id: number) {
-    const project = await this.projectRepo.findOne(id, {
-      relations: ['users'],
-    });
+  async findById(id: number, options?: FindOneOptions<Project>) {
+    const project = await this.projectRepo.findOne(id, options);
     if (!project) {
       throw new NotFoundException(`Project with id ${id} not found.`);
     }
@@ -96,17 +52,17 @@ export class ProjectService {
       throw new ConflictException(`Project with title ${data.title} already exists.`);
     }
 
-    const users = await this.userService.findByIds(data.users.map(u => u.id));
+    const scrumMaster = await this.userService.findById(data.scrumMasterId);
+    const projectOwner = await this.userService.findById(data.projectOwnerId);
 
-    for (const { id } of data.users) {
-      if (users.every(u => u.id !== id)) {
+    const developers = await this.userService.findByIds(data.developers);
+
+    for (const id of data.developers) {
+      if (developers.every(u => u.id !== id)) {
         throw new NotFoundException(`User with id ${id} not found.`);
       }
     }
 
-    return users.map(user => ({
-      user,
-      role: data.users.find(u => u.id === user.id).role,
-    }));
+    return { developers, scrumMaster, projectOwner };
   }
 }

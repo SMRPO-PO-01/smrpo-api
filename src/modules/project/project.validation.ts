@@ -17,11 +17,13 @@ export class VProject {
   @IsNotEmpty()
   title: string;
 
+  @IsInt()
+  scrumMasterId: number;
+
+  @IsInt()
+  projectOwnerId: number;
+
   @IsArray()
-  @ValidateNested({ each: true })
-  @ArrayMinSize(1)
-  @ExactlyOneRole(PROJECT_USER_ROLE.PROJECT_OWNER)
-  @ExactlyOneRole(PROJECT_USER_ROLE.SCRUM_MASTER)
-  @Type(() => VProjectUser)
-  users: VProjectUser[];
+  @IsInt({ each: true })
+  developers: number[];
 }

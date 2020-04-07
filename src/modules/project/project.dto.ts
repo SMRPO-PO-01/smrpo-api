@@ -1,21 +1,27 @@
 import { DUser } from '../user/user.dto';
-import { PROJECT_USER_ROLE } from './project-user-role.enum';
 import { Project } from './project.entity';
 
 export class DProject {
   id: number;
   title: string;
-  users: Array<DUser | { projectRole: PROJECT_USER_ROLE }>;
+  scrumMaster: DUser;
+  projectOwner: DUser;
+  developers: Array<DUser>;
 
   constructor(project: Project) {
     this.id = project.id;
     this.title = project.title;
 
-    if (project.users) {
-      this.users = project.users.map(({ user, role, userId }) => ({
-        ...(user ? new DUser(user) : { id: userId }),
-        projectRole: role,
-      }));
+    if (project.scrumMaster) {
+      this.scrumMaster = new DUser(project.scrumMaster);
+    }
+
+    if (project.projectOwner) {
+      this.projectOwner = new DUser(project.projectOwner);
+    }
+
+    if (project.developers) {
+      this.developers = project.developers.map(dev => new DUser(dev));
     }
   }
 }

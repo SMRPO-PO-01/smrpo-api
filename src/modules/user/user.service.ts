@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -42,5 +42,43 @@ export class UserService {
 
   async findByIds(ids: number[]) {
     return await this.userRepo.findByIds(ids);
+  }
+
+  async findById(id: number) {
+    const user = await this.userRepo.findOne(id);
+    if (!user) {
+      throw new NotFoundException(`User with id ${id} not found.`);
+    }
+    return user;
+  }
+
+  async usersProjects(userId: number) {
+    const user = await this.userRepo.findOne(userId, {
+      relations: [
+        'projects',
+        'projects.developers',
+        'projects.scrumMaster',
+        'projects.projectOwner',
+        'projects_sm',
+        'projects_sm.developers',
+        'projects_sm.scrumMaster',
+        'projects_sm.projectOwner',
+        'projects_po',
+        'projects_po.developers',
+        'projects_po.scrumMaster',
+        'projects_po.projectOwner',
+      ],
+    });
+    if (!user) {
+      throw new NotFoundException(`User with id ${userId} not found.`);
+    }
+
+    return Array.from(
+      new Map(
+        [...user.projects_po, ...user.projects_sm, ...user.projects]
+          .sort((a, b) => a.id - b.id)
+          .map(x => [x.id, x]),
+      ).values(),
+    );
   }
 }

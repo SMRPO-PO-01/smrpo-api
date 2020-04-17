@@ -22,7 +22,8 @@ export class AuthService {
     } else if (user.password !== hash(user.salt + password)) {
       throw new BadRequestException('Wrong password');
     } else {
-      user.lastLoginTime = new Date();
+      user.lastLoginTime = user.currentLoginTime;
+      user.currentLoginTime = new Date();
       return {
         user: await this.userRepo.save(user),
         token: this.jwtService.sign({

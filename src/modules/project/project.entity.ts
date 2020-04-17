@@ -1,6 +1,7 @@
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Sprint } from '../sprint/sprint.entity';
+import { Story } from '../story/story.entity';
 import { Task } from '../task/task.entity';
 import { User } from '../user/user.entity';
 
@@ -45,6 +46,12 @@ export class Project {
     s => s.project,
   )
   sprints: Sprint[];
+
+  @OneToMany(
+    () => Story,
+    s => s.project,
+  )
+  stories: Story;
 
   constructor(project?: {
     title: string;

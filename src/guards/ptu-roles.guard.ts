@@ -1,5 +1,6 @@
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable, SetMetadata } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { isNumber } from 'util';
 
 import { ProjectService } from '../modules/project/project.service';
 import { User } from '../modules/user/user.entity';
@@ -18,18 +19,27 @@ export class PTURolesGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const user: User = request.user;
     const body = request.body;
+    const params = request.params;
     const roles = this.reflector.get<PROJECT_USER_ROLE[]>('ptu-roles', context.getHandler());
 
     if (!roles || !roles.length) {
       return true;
-    } else if (!body.hasOwnProperty('projectId')) {
+    } else if (!body.hasOwnProperty('projectId') && !params.hasOwnProperty('projectId')) {
       console.warn(
-        '\n\x1b[33mPTURolesGuard has no effect if projectId field is not part of body!\n\x1b[0m',
+        '\n\x1b[33mPTURolesGuard has no effect if projectId field is not part of body or params!\n\x1b[0m',
       );
       return true;
     }
 
-    const project = await this.projectService.findById(body.projectId, {
+    const projectId = body.projectId || +params.projectId;
+
+    if (!isNumber(projectId)) {
+      throw new ForbiddenException(
+        `This route can only be used by users with project roles: ${roles.join(', ')}`,
+      );
+    }
+
+    const project = await this.projectService.findById(projectId, {
       relations: ['developers', 'scrumMaster', 'projectOwner'],
     });
 

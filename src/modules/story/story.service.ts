@@ -16,4 +16,8 @@ export class StoryService {
 
     return await this.storyRepo.save(new Story(data));
   }
+
+  async getStoriesForProject(projectId: number) {
+    return await this.storyRepo.find({ where: { projectId }, order: { id: 'ASC' } });
+  }
 }

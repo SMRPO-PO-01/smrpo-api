@@ -1,10 +1,10 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 import { PROJECT_USER_ROLE, PTURoles, PTURolesGuard } from '../../guards/ptu-roles.guard';
 import { DStory } from './story.dto';
 import { StoryService } from './story.service';
-import { VStory } from './story.validation';
+import { VStory, VStoryOpt } from './story.validation';
 
 @Controller('story')
 @UseGuards(AuthGuard('jwt'), PTURolesGuard)
@@ -27,5 +27,10 @@ export class StoryController {
     return await this.storyService
       .getStoriesForProject(projectId)
       .then(stories => stories.map(story => new DStory(story)));
+  }
+
+  @Put()
+  async updateStory(@Body() data: VStoryOpt) {
+    return new DStory(await this.storyService.updateStory(data));
   }
 }

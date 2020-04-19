@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Task } from './task.entity';
-import { FindOperator, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { VTask, VTaskOpt } from './task.validation';
 import { ILike } from '../../utils/ilike';
 import { Pagination } from '../../validators/pagination';

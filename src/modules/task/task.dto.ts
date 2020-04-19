@@ -9,6 +9,8 @@ export class DTask {
   createdAt: Date;
   projectId: number;
   userId: number;
+  storyId: number;
+  size: number;
 
   constructor(task: Task) {
     this.id = task.id;
@@ -18,5 +20,7 @@ export class DTask {
     this.createdAt = task.createdAt;
     this.projectId = task.projectId;
     this.userId = task.userId;
+    this.storyId = task.storyId;
+    this.size = task.size;
   }
 }

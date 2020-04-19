@@ -1,4 +1,4 @@
-import { IsIn, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from 'class-validator';
 
 import { TASK_STATE } from './task-state.enum';
 
@@ -7,9 +7,8 @@ export class VTask {
   @IsNotEmpty()
   title: string;
 
-  @IsOptional()
   @IsString()
-  description?: string;
+  description: string;
 
   @IsIn(Object.values(TASK_STATE))
   state: TASK_STATE;
@@ -20,6 +19,15 @@ export class VTask {
   @IsOptional()
   @IsInt()
   userId?: number;
+
+  @IsInt()
+  storyId: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(15)
+  size?: number;
 }
 
 export class VTaskOpt {
@@ -46,4 +54,14 @@ export class VTaskOpt {
   @IsOptional()
   @IsInt()
   userId?: number;
+
+  @IsOptional()
+  @IsInt()
+  storyId?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(15)
+  size?: number;
 }

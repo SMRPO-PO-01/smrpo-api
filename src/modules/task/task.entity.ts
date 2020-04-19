@@ -3,6 +3,7 @@ import { TASK_STATE } from './task-state.enum';
 import { Project } from '../project/project.entity';
 import { User } from '../user/user.entity';
 import { VTask } from './task.validation';
+import { Story } from '../story/story.entity';
 
 @Entity()
 export class Task {
@@ -31,6 +32,16 @@ export class Task {
   projectId: number;
 
   @ManyToOne(
+    () => Story,
+    story => story.tasks,
+    { nullable: true },
+  )
+  story: Story;
+
+  @Column({ nullable: true })
+  storyId: number;
+
+  @ManyToOne(
     () => User,
     user => user.tasks,
     { nullable: true },
@@ -40,6 +51,9 @@ export class Task {
   @Column({ nullable: true })
   userId: number;
 
+  @Column({ nullable: true })
+  size: number;
+
   constructor(task?: VTask) {
     if (task) {
       this.title = task.title;
@@ -47,6 +61,8 @@ export class Task {
       this.state = task.state;
       this.projectId = task.projectId;
       this.userId = task.userId;
+      this.storyId = task.storyId;
+      this.size = task.size;
     }
   }
 }

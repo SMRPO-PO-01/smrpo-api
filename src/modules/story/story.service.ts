@@ -22,16 +22,19 @@ export class StoryService {
   }
 
   async findById(id: number) {
-    return await this.storyRepo.findOne(id);
+    return await this.storyRepo.findOne(id, {
+      relations: [
+        'project',
+        'sprint',
+        'tasks',
+        'project.scrumMaster',
+        'project.projectOwner',
+        'project.developers',
+      ],
+    });
   }
 
   async updateStory(data: VStoryOpt) {
-    let story = await this.storyRepo.findOne(data.id);
-    if (story.sprintId) {
-      throw new ConflictException(
-        `Cannot change size, the story is already assigned to sprint ${story.sprintId}`,
-      );
-    }
     return await this.storyRepo.save(data);
   }
 }

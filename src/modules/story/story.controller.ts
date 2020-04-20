@@ -46,8 +46,23 @@ export class StoryController {
   @Put()
   async updateStory(@Body() data: VStoryOpt, @AuthUser() user: User) {
     let story = await this.storyService.findById(data.id);
-    if (data.size && user.role !== USER_ROLE.ADMIN && user.id !== story.project.scrumMaster.id) {
-      throw new ForbiddenException(`This route can only be used by admin and scrum master`);
+    if (user.role !== USER_ROLE.ADMIN) {
+      if (
+        ![
+          story.project.projectOwner.id,
+          story.project.scrumMaster.id,
+          ...story.project.developers.map(d => d.id),
+        ].includes(user.id)
+      ) {
+        throw new ForbiddenException(
+          `This route can only be used by scrum master, project owner and developers`,
+        );
+      }
+      if (data.size && user.id !== story.project.scrumMaster.id) {
+        throw new ForbiddenException(
+          `Only admin and scrum master can change the size of the story`,
+        );
+      }
     }
     if (data.size && story.sprintId) {
       throw new ConflictException(

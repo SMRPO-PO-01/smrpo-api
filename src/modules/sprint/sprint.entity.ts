@@ -1,7 +1,8 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Project } from '../project/project.entity';
 import { VSprint } from './sprint.validation';
+import { Story } from '../story/story.entity';
 
 @Entity()
 export class Sprint {
@@ -27,6 +28,12 @@ export class Sprint {
     },
   )
   project: Project;
+
+  @OneToMany(
+    () => Story,
+    s => s.project,
+  )
+  stories: Story[];
 
   constructor(data?: VSprint) {
     if (data) {

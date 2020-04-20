@@ -1,8 +1,10 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Project } from '../project/project.entity';
 import { STORY_PRIORITY } from './story-priority.enum';
 import { VStory } from './story.validation';
+import { Sprint } from '../sprint/sprint.entity';
+import { Task } from '../task/task.entity';
 
 @Entity()
 export class Story {
@@ -24,6 +26,9 @@ export class Story {
   @Column()
   businessValue: number;
 
+  @Column({ nullable: true })
+  size: number;
+
   @Column()
   projectId: number;
   @ManyToOne(
@@ -31,6 +36,22 @@ export class Story {
     p => p.stories,
   )
   project: Project;
+
+  @ManyToOne(
+    () => Sprint,
+    sprint => sprint.stories,
+    { nullable: true },
+  )
+  sprint: Sprint;
+
+  @Column({ nullable: true })
+  sprintId: number;
+
+  @OneToMany(
+    () => Task,
+    task => task.story,
+  )
+  tasks: Task[];
 
   constructor(data?: VStory) {
     if (data) {
@@ -40,6 +61,8 @@ export class Story {
       this.priority = data.priority;
       this.businessValue = data.businessValue;
       this.project = data.project;
+      this.size = data.size;
+      this.sprintId = data.sprintId;
     }
   }
 }

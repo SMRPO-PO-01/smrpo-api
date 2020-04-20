@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Story } from './story.entity';
-import { VStory } from './story.validation';
+import { VStory, VStoryOpt } from './story.validation';
 
 @Injectable()
 export class StoryService {
@@ -19,5 +19,22 @@ export class StoryService {
 
   async getStoriesForProject(projectId: number) {
     return await this.storyRepo.find({ where: { projectId }, order: { id: 'ASC' } });
+  }
+
+  async findById(id: number) {
+    return await this.storyRepo.findOne(id, {
+      relations: [
+        'project',
+        'sprint',
+        'tasks',
+        'project.scrumMaster',
+        'project.projectOwner',
+        'project.developers',
+      ],
+    });
+  }
+
+  async updateStory(data: VStoryOpt) {
+    return await this.storyRepo.save(data);
   }
 }

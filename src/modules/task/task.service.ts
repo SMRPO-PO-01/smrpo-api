@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Task } from './task.entity';
-import { FindOperator, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { VTask, VTaskOpt } from './task.validation';
 import { ILike } from '../../utils/ilike';
 import { Pagination } from '../../validators/pagination';
@@ -14,7 +14,13 @@ export class TaskService {
     return await this.taskRepo.findOne(id);
   }
 
-  async listAll({ skip, take }: Pagination, search: string, userId: number, projectId: number) {
+  async listAll(
+    { skip, take }: Pagination,
+    search: string,
+    userId: number,
+    projectId: number,
+    storyId: number,
+  ) {
     let where = [
       { title: ILike(`%${search}%`) },
       { description: ILike(`%${search}%`) },
@@ -26,6 +32,9 @@ export class TaskService {
     }
     if (projectId) {
       filter.projectId = projectId;
+    }
+    if (storyId) {
+      filter.storyId = storyId;
     }
     where = where.map(elem => ({
       ...elem,

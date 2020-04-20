@@ -12,29 +12,30 @@ import { DefaultStringPipe } from '../../validators/string';
 export class TaskController {
   constructor(private taskService: TaskService) {}
 
-  @Get('all')
+  @Get(['', 'all'])
   async listAll(
     @Query() pagination: Pagination,
     @Query('search', new DefaultStringPipe()) search: string,
     @Query('user', new OptionalParseIntPipe()) user: number,
     @Query('project', new OptionalParseIntPipe()) project: number,
+    @Query('story', new OptionalParseIntPipe()) story: number,
   ) {
-    return (await this.taskService.listAll(pagination, search, user, project)).map(
+    return (await this.taskService.listAll(pagination, search, user, project, story)).map(
       task => new DTask(task),
     );
   }
 
-  @Post('create')
+  @Post(['', 'create'])
   async createTask(@Body() data: VTask) {
     return new DTask(await this.taskService.createTask(data));
   }
 
-  @Put('update')
+  @Put(['', 'update'])
   async updateTask(@Body() data: VTaskOpt) {
     return new DTask(await this.taskService.updateTask(data));
   }
 
-  @Delete('delete')
+  @Delete(['', 'delete'])
   async deleteTask(@Body() data: VTaskOpt) {
     return await this.taskService.deleteTask(data);
   }

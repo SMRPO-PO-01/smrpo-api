@@ -10,7 +10,7 @@ export class StoryService {
   constructor(@InjectRepository(Story) private storyRepo: Repository<Story>) {}
 
   async createStory(data: VStory) {
-    if (await this.storyRepo.findOne({ title: data.title, projectId: data.projectId })) {
+    if (await this.storyRepo.findOne({ title: data.title, projectId: data.project.id })) {
       throw new ConflictException(`Story with title ${data.title} already exists`);
     }
 

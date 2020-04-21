@@ -1,15 +1,10 @@
 import { Transform } from 'class-transformer';
-import { Allow, IsDate, IsInt, IsNumber, Min } from 'class-validator';
+import { IsDate, IsInt, Min } from 'class-validator';
 
 import { MinDateFun } from '../../utils/min-date.validator';
 import { Project } from '../project/project.entity';
 
 export class VSprint {
-  @IsNumber()
-  projectId: number;
-
-  // this is added by ptu-roles guard
-  @Allow()
   project: Project;
 
   @IsDate({

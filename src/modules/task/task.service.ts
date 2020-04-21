@@ -1,18 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Task } from './task.entity';
 import { Repository } from 'typeorm';
-import { VTask, VTaskOpt } from './task.validation';
+
 import { ILike } from '../../utils/ilike';
 import { Pagination } from '../../validators/pagination';
+import { Project } from '../project/project.entity';
+import { Task } from './task.entity';
+import { VTask, VTaskOpt } from './task.validation';
 
 @Injectable()
 export class TaskService {
   constructor(@InjectRepository(Task) private taskRepo: Repository<Task>) {}
-
-  async findById(id: number) {
-    return await this.taskRepo.findOne(id);
-  }
 
   async listAll(
     { skip, take }: Pagination,
@@ -26,7 +24,7 @@ export class TaskService {
       { description: ILike(`%${search}%`) },
       { state: ILike(`%${search}%`) },
     ];
-    let filter: any = {};
+    const filter: any = {};
     if (userId) {
       filter.userId = userId;
     }
@@ -52,11 +50,17 @@ export class TaskService {
     return await this.taskRepo.save(new Task(data));
   }
 
-  async updateTask(data: VTaskOpt) {
+  async updateTask(data: VTaskOpt, project: Project) {
+    if (!(await this.taskRepo.findOne({ id: data.id, projectId: project.id }))) {
+      throw new NotFoundException(`Task with id ${data.id} not found!`);
+    }
     return await this.taskRepo.save(data);
   }
 
-  async deleteTask(data: VTaskOpt) {
+  async deleteTask(data: VTaskOpt, project: Project) {
+    if (!(await this.taskRepo.findOne({ id: data.id, projectId: project.id }))) {
+      throw new NotFoundException(`Task with id ${data.id} not found!`);
+    }
     return await this.taskRepo.delete(data);
   }
 }

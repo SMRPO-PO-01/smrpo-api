@@ -1,9 +1,10 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { TASK_STATE } from './task-state.enum';
+
 import { Project } from '../project/project.entity';
-import { User } from '../user/user.entity';
-import { VTask } from './task.validation';
 import { Story } from '../story/story.entity';
+import { User } from '../user/user.entity';
+import { TASK_STATE } from './task-state.enum';
+import { VTask } from './task.validation';
 
 @Entity()
 export class Task {
@@ -59,7 +60,7 @@ export class Task {
       this.title = task.title;
       this.description = task.description;
       this.state = task.state;
-      this.projectId = task.projectId;
+      this.project = task.project;
       this.userId = task.userId;
       this.storyId = task.storyId;
       this.size = task.size;

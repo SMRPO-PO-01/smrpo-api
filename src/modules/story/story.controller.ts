@@ -4,69 +4,66 @@ import {
   Controller,
   ForbiddenException,
   Get,
-  Param,
-  ParseIntPipe,
+  NotFoundException,
   Post,
   Put,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
-import { PROJECT_USER_ROLE, PTURoles, PTURolesGuard } from '../../guards/ptu-roles.guard';
+import { PROJECT_USER_ROLE, PTUProject, PTURoles, PTURolesGuard } from '../../guards/ptu-roles.guard';
+import { Project } from '../project/project.entity';
+import { AuthUser } from '../user/auth/jwt.strategy';
+import { User } from '../user/user.entity';
 import { DStory } from './story.dto';
 import { StoryService } from './story.service';
 import { VStory, VStoryOpt } from './story.validation';
-import { AuthUser } from '../user/auth/jwt.strategy';
-import { User } from '../user/user.entity';
-import { USER_ROLE } from '../user/user-role.enum';
 
-@Controller('story')
+@Controller()
 @UseGuards(AuthGuard('jwt'), PTURolesGuard)
 export class StoryController {
   constructor(private storyService: StoryService) {}
 
   @Post()
   @PTURoles(PROJECT_USER_ROLE.SCRUM_MASTER, PROJECT_USER_ROLE.PROJECT_OWNER)
-  async createStory(@Body() data: VStory) {
+  async createStory(@Body() data: VStory, @PTUProject() project: Project, @AuthUser() user: User) {
+    if (data.size && user.id !== project.scrumMaster.id) {
+      throw new ForbiddenException(`Only scrum master can change the size of the story`);
+    }
+    data.project = project;
     return new DStory(await this.storyService.createStory(data));
   }
 
-  @Get(':projectId')
+  @Get()
   @PTURoles(
     PROJECT_USER_ROLE.SCRUM_MASTER,
     PROJECT_USER_ROLE.PROJECT_OWNER,
     PROJECT_USER_ROLE.DEVELOPER,
   )
-  async getStoriesForProject(@Param('projectId', new ParseIntPipe()) projectId: number) {
+  async getStoriesForProject(@PTUProject() project: Project) {
     return await this.storyService
-      .getStoriesForProject(projectId)
+      .getStoriesForProject(project.id)
       .then(stories => stories.map(story => new DStory(story)));
   }
 
   @Put()
-  async updateStory(@Body() data: VStoryOpt, @AuthUser() user: User) {
-    let story = await this.storyService.findById(data.id);
-    if (user.role !== USER_ROLE.ADMIN) {
-      if (
-        ![
-          story.project.projectOwner.id,
-          story.project.scrumMaster.id,
-          ...story.project.developers.map(d => d.id),
-        ].includes(user.id)
-      ) {
-        throw new ForbiddenException(
-          `This route can only be used by scrum master, project owner and developers`,
-        );
-      }
-      if (data.size && user.id !== story.project.scrumMaster.id) {
-        throw new ForbiddenException(
-          `Only admin and scrum master can change the size of the story`,
-        );
-      }
+  @PTURoles(PROJECT_USER_ROLE.SCRUM_MASTER, PROJECT_USER_ROLE.PROJECT_OWNER)
+  async updateStory(
+    @Body() data: VStoryOpt,
+    @AuthUser() user: User,
+    @PTUProject() project: Project,
+  ) {
+    const story = await this.storyService.findById(data.id);
+    if (!story || story.projectId !== project.id) {
+      throw new NotFoundException(`Story with id ${story.id} not found!`);
     }
-    if (data.size && story.sprintId) {
+
+    if (data.size && user.id !== story.project.scrumMaster.id) {
+      throw new ForbiddenException(`Only scrum master can change the size of the story`);
+    }
+    if (story.sprintId) {
       throw new ConflictException(
-        `Cannot change size, the story is already assigned to sprint ${story.sprintId}`,
+        `Cannot update, the story is already assigned to sprint ${story.sprintId}`,
       );
     }
     return new DStory(await this.storyService.updateStory(data));

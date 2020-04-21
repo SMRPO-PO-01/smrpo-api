@@ -17,7 +17,7 @@ export class SprintService {
   private async checkOverlaping(data: VSprint) {
     if (
       await this.sprintRepo.findOne({
-        projectId: data.projectId,
+        projectId: data.project.id,
         endDate: MoreThanOrEqual(data.startDate),
         startDate: LessThanOrEqual(data.endDate),
       })

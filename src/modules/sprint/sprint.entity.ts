@@ -1,8 +1,8 @@
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Project } from '../project/project.entity';
-import { VSprint } from './sprint.validation';
 import { Story } from '../story/story.entity';
+import { VSprint } from './sprint.validation';
 
 @Entity()
 export class Sprint {

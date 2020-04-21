@@ -1,12 +1,13 @@
 import {
   CanActivate,
+  createParamDecorator,
   ExecutionContext,
   ForbiddenException,
   Injectable,
+  ParseIntPipe,
   SetMetadata,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { isNumber } from 'util';
 
 import { ProjectService } from '../modules/project/project.service';
 import { User } from '../modules/user/user.entity';
@@ -24,32 +25,25 @@ export class PTURolesGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const user: User = request.user;
-    const body = request.body;
     const params = request.params;
     const roles = this.reflector.get<PROJECT_USER_ROLE[]>('ptu-roles', context.getHandler());
 
     if (!roles || !roles.length) {
       return true;
-    } else if (!body.hasOwnProperty('projectId') && !params.hasOwnProperty('projectId')) {
+    } else if (!params.hasOwnProperty('projectId')) {
       console.warn(
-        '\n\x1b[33mPTURolesGuard has no effect if projectId field is not part of body or params!\n\x1b[0m',
+        '\n\x1b[33mPTURolesGuard has no effect if projectId field is not in params!\n\x1b[0m',
       );
       return true;
     }
 
-    const projectId = body.projectId || +params.projectId;
-
-    if (!isNumber(projectId)) {
-      throw new ForbiddenException(
-        `This route can only be used by users with project roles: ${roles.join(', ')}`,
-      );
-    }
+    const projectId = await new ParseIntPipe().transform(params.projectId, null);
 
     const project = await this.projectService.findById(projectId, {
       relations: ['developers', 'scrumMaster', 'projectOwner'],
     });
 
-    body.project = project;
+    request.project = project;
 
     if (
       (roles.includes(PROJECT_USER_ROLE.DEVELOPER) &&
@@ -67,3 +61,5 @@ export class PTURolesGuard implements CanActivate {
 }
 
 export const PTURoles = (...roles: PROJECT_USER_ROLE[]) => SetMetadata('ptu-roles', roles);
+
+export const PTUProject = createParamDecorator((data, req) => req.project);

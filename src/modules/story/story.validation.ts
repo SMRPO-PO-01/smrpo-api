@@ -1,14 +1,9 @@
-import { Allow, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from 'class-validator';
+import { IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from 'class-validator';
 
 import { Project } from '../project/project.entity';
 import { STORY_PRIORITY } from './story-priority.enum';
 
 export class VStory {
-  @IsInt()
-  projectId: number;
-
-  // this is added by ptu-roles guard
-  @Allow()
   project: Project;
 
   @IsString()
@@ -32,6 +27,7 @@ export class VStory {
   @IsInt()
   @Min(1)
   @Max(15)
+  @IsOptional()
   size: number;
 
   @IsOptional()
@@ -42,15 +38,6 @@ export class VStory {
 export class VStoryOpt {
   @IsInt()
   id: number;
-
-  @IsOptional()
-  @IsInt()
-  projectId?: number;
-
-  // this is added by ptu-roles guard
-  @IsOptional()
-  @Allow()
-  project?: Project;
 
   @IsOptional()
   @IsString()

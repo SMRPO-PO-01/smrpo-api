@@ -9,7 +9,7 @@ import { DProject } from './project.dto';
 import { ProjectService } from './project.service';
 import { VProject } from './project.validation';
 
-@Controller('project')
+@Controller()
 @UseGuards(AuthGuard('jwt'))
 export class ProjectController {
   constructor(private projectService: ProjectService) {}

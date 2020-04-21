@@ -25,13 +25,17 @@ export class StoryService {
     return await this.storyRepo.findOne(id, {
       relations: [
         'project',
-        'sprint',
+        'sprints',
         'tasks',
         'project.scrumMaster',
         'project.projectOwner',
         'project.developers',
       ],
     });
+  }
+
+  async findByIds(ids: number[]) {
+    return await this.storyRepo.findByIds(ids);
   }
 
   async updateStory(data: VStoryOpt) {

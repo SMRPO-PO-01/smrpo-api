@@ -61,10 +61,8 @@ export class StoryController {
     if (data.size && user.id !== story.project.scrumMaster.id) {
       throw new ForbiddenException(`Only scrum master can change the size of the story`);
     }
-    if (story.sprintId) {
-      throw new ConflictException(
-        `Cannot update, the story is already assigned to sprint ${story.sprintId}`,
-      );
+    if (story.sprints.some(sprint => sprint.isActive())) {
+      throw new ConflictException(`Cannot update, the story is already assigned to active sprint`);
     }
     return new DStory(await this.storyService.updateStory(data));
   }

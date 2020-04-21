@@ -29,10 +29,6 @@ export class VStory {
   @Max(15)
   @IsOptional()
   size: number;
-
-  @IsOptional()
-  @IsInt()
-  sprintId?: number;
 }
 
 export class VStoryOpt {
@@ -67,8 +63,4 @@ export class VStoryOpt {
   @Min(1)
   @Max(15)
   size?: number;
-
-  @IsOptional()
-  @IsInt()
-  sprintId?: number;
 }

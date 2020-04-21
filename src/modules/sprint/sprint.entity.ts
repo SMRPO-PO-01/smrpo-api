@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Project } from '../project/project.entity';
 import { Story } from '../story/story.entity';
@@ -18,6 +18,7 @@ export class Sprint {
   @Column()
   velocity: number;
 
+  @Column()
   projectId: number;
   @ManyToOne(
     () => Project,
@@ -29,11 +30,18 @@ export class Sprint {
   )
   project: Project;
 
-  @OneToMany(
+  @ManyToMany(
     () => Story,
-    s => s.project,
+    s => s.sprints,
   )
+  @JoinTable()
   stories: Story[];
+
+  isActive() {
+    const today = new Date();
+
+    return new Date(this.startDate) <= today && new Date(this.endDate) >= today;
+  }
 
   constructor(data?: VSprint) {
     if (data) {

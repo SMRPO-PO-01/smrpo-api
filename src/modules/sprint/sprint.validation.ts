@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsDate, IsInt, Min } from 'class-validator';
+import { IsArray, IsDate, IsInt, Min } from 'class-validator';
 
 import { MinDateFun } from '../../utils/min-date.validator';
 import { Project } from '../project/project.entity';
@@ -24,4 +24,13 @@ export class VSprint {
   @IsInt()
   @Min(1)
   velocity: number;
+}
+
+export class VStories {
+  @IsInt({ each: true })
+  @IsArray()
+  stories: number[];
+
+  @IsInt()
+  sprintId: number;
 }

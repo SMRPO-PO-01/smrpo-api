@@ -27,16 +27,13 @@ export class DProject {
   }
 }
 
-export class DProjectWithStories {
-  id: number;
-  title: string;
+export class DProjectWithStories extends DProject {
   backlog: DStory[];
   sprint: DStory[];
   accepted: DStory[];
 
   constructor(project: Project) {
-    this.id = project.id;
-    this.title = project.title;
+    super(project);
 
     const activeSprint = project.sprints.find(sprint => sprint.isActive());
     if (activeSprint) {

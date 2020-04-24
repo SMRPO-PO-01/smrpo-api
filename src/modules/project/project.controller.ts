@@ -1,11 +1,11 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 import { AdminGuard } from '../../guards/admin.guard';
 import { Pagination } from '../../validators/pagination';
 import { AuthUser } from '../user/auth/jwt.strategy';
 import { User } from '../user/user.entity';
-import { DProject } from './project.dto';
+import { DProject, DProjectWithStories } from './project.dto';
 import { ProjectService } from './project.service';
 import { VProject } from './project.validation';
 
@@ -31,5 +31,10 @@ export class ProjectController {
   @Get('my')
   async getMyProjects(@AuthUser() user: User) {
     return (await this.projectService.getMyProjects(user)).map(project => new DProject(project));
+  }
+
+  @Get(':id')
+  async getOneProject(@AuthUser() user: User, @Param('id', new ParseIntPipe()) id: number) {
+    return new DProjectWithStories(await this.projectService.getOneProjectWithStories(id, user));
   }
 }

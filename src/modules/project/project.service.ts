@@ -28,6 +28,28 @@ export class ProjectService {
     });
   }
 
+  async getOneProjectWithStories(id: number, user: User) {
+    const project = await this.projectRepo.findOne(id, {
+      relations: [
+        'stories',
+        'sprints',
+        'sprints.stories',
+        'projectOwner',
+        'scrumMaster',
+        'developers',
+      ],
+    });
+    if (
+      !project ||
+      (user.id !== project.projectOwner.id &&
+        user.id !== project.scrumMaster.id &&
+        !project.developers.some(d => d.id === user.id))
+    ) {
+      throw new NotFoundException(`Project with id ${id} not found`);
+    }
+    return project;
+  }
+
   async getMyProjects(user: User) {
     return await this.userService.usersProjects(user.id);
   }

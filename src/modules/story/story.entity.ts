@@ -49,6 +49,9 @@ export class Story {
   )
   tasks: Task[];
 
+  @Column({ default: false })
+  accepted: boolean;
+
   constructor(data?: VStory) {
     if (data) {
       this.title = data.title;
@@ -58,6 +61,7 @@ export class Story {
       this.businessValue = data.businessValue;
       this.project = data.project;
       this.size = data.size;
+      this.accepted = data.accepted;
     }
   }
 }

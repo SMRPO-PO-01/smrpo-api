@@ -1,7 +1,17 @@
-import { IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from 'class-validator';
+import {
+  IsBoolean,
+  IsIn,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+} from 'class-validator';
 
 import { Project } from '../project/project.entity';
 import { STORY_PRIORITY } from './story-priority.enum';
+import { Column } from 'typeorm';
 
 export class VStory {
   project: Project;
@@ -29,6 +39,10 @@ export class VStory {
   @Max(15)
   @IsOptional()
   size: number;
+
+  @IsOptional()
+  @IsBoolean()
+  accepted: boolean;
 }
 
 export class VStoryOpt {
@@ -63,4 +77,8 @@ export class VStoryOpt {
   @Min(1)
   @Max(15)
   size?: number;
+
+  @IsOptional()
+  @IsBoolean()
+  accepted: boolean;
 }

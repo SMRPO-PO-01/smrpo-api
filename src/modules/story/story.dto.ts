@@ -11,6 +11,7 @@ export class DStory {
   size: number;
   accepted: boolean;
   projectId: number;
+  acceptanceComments: string;
 
   constructor(story: Story) {
     this.id = story.id;
@@ -22,5 +23,6 @@ export class DStory {
     this.size = story.size;
     this.accepted = story.accepted;
     this.projectId = story.projectId;
+    this.acceptanceComments = story.acceptanceComments;
   }
 }

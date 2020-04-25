@@ -72,18 +72,18 @@ export class StoryController {
     if (
       currentSprint &&
       !(
-        data.accepted &&
+        (data.accepted || data.acceptanceComments) &&
         story.project.projectOwner.id === user.id &&
         story.tasks.every(task => task.state === TASK_STATE.DONE)
       )
     ) {
       throw new ConflictException(
-        `Cannot update, only story assigned to an active sprint with all tasks completed can be accepted`,
+        `Story in an active sprint cannot be edited. Only story in an active sprint with all tasks completed can have acceptance edited by project owner`,
       );
     }
 
-    if (!currentSprint && data.accepted) {
-      throw new ConflictException(`Only stories in an active sprint can be accepted`);
+    if (!currentSprint && (data.accepted || data.acceptanceComments)) {
+      throw new ConflictException(`Only stories in an active sprint can have acceptance edited`);
     }
 
     return new DStory(await this.storyService.updateStory(data));

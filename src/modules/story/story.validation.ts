@@ -11,7 +11,6 @@ import {
 
 import { Project } from '../project/project.entity';
 import { STORY_PRIORITY } from './story-priority.enum';
-import { Column } from 'typeorm';
 
 export class VStory {
   project: Project;
@@ -43,6 +42,10 @@ export class VStory {
   @IsOptional()
   @IsBoolean()
   accepted: boolean;
+
+  @IsOptional()
+  @IsString()
+  acceptanceComments: string;
 }
 
 export class VStoryOpt {
@@ -81,4 +84,8 @@ export class VStoryOpt {
   @IsOptional()
   @IsBoolean()
   accepted: boolean;
+
+  @IsOptional()
+  @IsString()
+  acceptanceComments: string;
 }

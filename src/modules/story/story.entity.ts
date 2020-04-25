@@ -52,6 +52,9 @@ export class Story {
   @Column({ default: false })
   accepted: boolean;
 
+  @Column({ type: 'text', default: '' })
+  acceptanceComments: string;
+
   constructor(data?: VStory) {
     if (data) {
       this.title = data.title;
@@ -62,6 +65,7 @@ export class Story {
       this.project = data.project;
       this.size = data.size;
       this.accepted = data.accepted;
+      this.acceptanceComments = data.acceptanceComments;
     }
   }
 }

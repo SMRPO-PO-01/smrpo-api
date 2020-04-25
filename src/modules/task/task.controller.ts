@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Post, Put, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  ConflictException,
+  Controller,
+  Delete,
+  Get,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 import {
@@ -14,6 +24,9 @@ import { Project } from '../project/project.entity';
 import { DTask } from './task.dto';
 import { TaskService } from './task.service';
 import { VTask, VTaskOpt } from './task.validation';
+import { TASK_STATE } from './task-state.enum';
+import { AuthUser } from '../user/auth/jwt.strategy';
+import { User } from '../user/user.entity';
 
 @Controller()
 @UseGuards(AuthGuard('jwt'), PTURolesGuard)
@@ -46,8 +59,22 @@ export class TaskController {
   }
 
   @Put()
-  @PTURoles(PROJECT_USER_ROLE.SCRUM_MASTER, PROJECT_USER_ROLE.DEVELOPER)
-  async updateTask(@Body() data: VTaskOpt, @PTUProject() project: Project) {
+  @PTURoles(PROJECT_USER_ROLE.DEVELOPER)
+  async updateTask(@Body() data: VTaskOpt, @PTUProject() project: Project, @AuthUser() user: User) {
+    const task = await this.taskService.findById(data.id);
+    if (task.userId && task.userId !== user.id) {
+      throw new ConflictException(`You can only edit your own tasks`);
+    }
+    if (data.state === TASK_STATE.UNASSIGNED) {
+      data.userId = null;
+    } else if (data.state) {
+      if (!data.userId) {
+        data.userId = user.id;
+      }
+      if (data.userId !== user.id) {
+        throw new ConflictException(`You can only change state of your own tasks`);
+      }
+    }
     return new DTask(await this.taskService.updateTask(data, project));
   }
 

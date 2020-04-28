@@ -46,6 +46,10 @@ export class TaskService {
     });
   }
 
+  async findById(id: number) {
+    return await this.taskRepo.findOne(id);
+  }
+
   async createTask(data: VTask) {
     return await this.taskRepo.save(new Task(data));
   }

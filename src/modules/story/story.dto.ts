@@ -9,6 +9,9 @@ export class DStory {
   priority: STORY_PRIORITY;
   businessValue: number;
   size: number;
+  accepted: boolean;
+  projectId: number;
+  acceptanceComments: string;
 
   constructor(story: Story) {
     this.id = story.id;
@@ -18,5 +21,8 @@ export class DStory {
     this.priority = story.priority;
     this.businessValue = story.businessValue;
     this.size = story.size;
+    this.accepted = story.accepted;
+    this.projectId = story.projectId;
+    this.acceptanceComments = story.acceptanceComments;
   }
 }

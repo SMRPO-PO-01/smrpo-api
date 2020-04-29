@@ -61,7 +61,9 @@ export class SprintService {
       throw new BadRequestException(`All stories need to have size.`);
     }
 
-    //TODO: check if any story is realized => Exception
+    if (stories.some(story => story.accepted)) {
+      throw new BadRequestException('Cannot add already accepted stories to sprint.');
+    }
 
     sprint.stories.push(...stories);
 

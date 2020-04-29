@@ -13,6 +13,7 @@ import { AuthGuard } from '@nestjs/passport';
 
 import { PROJECT_USER_ROLE, PTUProject, PTURoles, PTURolesGuard } from '../../guards/ptu-roles.guard';
 import { Project } from '../project/project.entity';
+import { TASK_STATE } from '../task/task-state.enum';
 import { AuthUser } from '../user/auth/jwt.strategy';
 import { User } from '../user/user.entity';
 import { DStory } from './story.dto';
@@ -61,9 +62,25 @@ export class StoryController {
     if (data.size && user.id !== story.project.scrumMaster.id) {
       throw new ForbiddenException(`Only scrum master can change the size of the story`);
     }
-    if (story.sprints.some(sprint => sprint.isActive())) {
-      throw new ConflictException(`Cannot update, the story is already assigned to active sprint`);
+
+    const currentSprint = story.sprints.find(sprint => sprint.isActive());
+    if (
+      currentSprint &&
+      !(
+        (data.accepted || data.acceptanceComments) &&
+        story.project.projectOwner.id === user.id &&
+        story.tasks.every(task => task.state === TASK_STATE.DONE)
+      )
+    ) {
+      throw new ConflictException(
+        `Story in an active sprint cannot be edited. Only story in an active sprint with all tasks completed can have acceptance edited by project owner`,
+      );
     }
+
+    if (!currentSprint && (data.accepted || data.acceptanceComments)) {
+      throw new ConflictException(`Only stories in an active sprint can have acceptance edited`);
+    }
+
     return new DStory(await this.storyService.updateStory(data));
   }
 }

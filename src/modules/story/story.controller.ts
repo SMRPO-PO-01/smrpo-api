@@ -11,19 +11,14 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
-import {
-  PROJECT_USER_ROLE,
-  PTUProject,
-  PTURoles,
-  PTURolesGuard,
-} from '../../guards/ptu-roles.guard';
+import { PROJECT_USER_ROLE, PTUProject, PTURoles, PTURolesGuard } from '../../guards/ptu-roles.guard';
 import { Project } from '../project/project.entity';
+import { TASK_STATE } from '../task/task-state.enum';
 import { AuthUser } from '../user/auth/jwt.strategy';
 import { User } from '../user/user.entity';
 import { DStory } from './story.dto';
 import { StoryService } from './story.service';
 import { VStory, VStoryOpt } from './story.validation';
-import { TASK_STATE } from '../task/task-state.enum';
 
 @Controller()
 @UseGuards(AuthGuard('jwt'), PTURolesGuard)

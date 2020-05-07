@@ -13,6 +13,7 @@ export class DStory {
   accepted: boolean;
   projectId: number;
   acceptanceComments: string;
+  rejectReason: string;
   allTasksCompleted: boolean;
 
   constructor(story: Story) {
@@ -26,6 +27,7 @@ export class DStory {
     this.accepted = story.accepted;
     this.projectId = story.projectId;
     this.acceptanceComments = story.acceptanceComments;
+    this.rejectReason = story.rejectReason;
 
     if (story.tasks) {
       this.allTasksCompleted = story.tasks.reduce(

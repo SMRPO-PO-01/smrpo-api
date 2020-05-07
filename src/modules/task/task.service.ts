@@ -55,8 +55,11 @@ export class TaskService {
   }
 
   async createTask(data: VTask) {
-    if (!(await this.storyService.findById(data.storyId))) {
-      throw new BadRequestException(`Story with id ${data.storyId} does not exist.`);
+    const story = await this.storyService.findById(data.storyId);
+    if (!story || story.projectId != data.project.id) {
+      throw new BadRequestException(
+        `Story with id ${data.storyId} does not exist in the current project.`,
+      );
     }
     return await this.taskRepo.save(new Task(data));
   }

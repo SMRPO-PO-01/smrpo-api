@@ -11,7 +11,12 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
-import { PROJECT_USER_ROLE, PTUProject, PTURoles, PTURolesGuard } from '../../guards/ptu-roles.guard';
+import {
+  PROJECT_USER_ROLE,
+  PTUProject,
+  PTURoles,
+  PTURolesGuard,
+} from '../../guards/ptu-roles.guard';
 import { Project } from '../project/project.entity';
 import { TASK_STATE } from '../task/task-state.enum';
 import { AuthUser } from '../user/auth/jwt.strategy';

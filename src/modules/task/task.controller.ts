@@ -4,13 +4,14 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-
 import {
   PROJECT_USER_ROLE,
   PTUProject,
@@ -78,9 +79,9 @@ export class TaskController {
     return new DTask(await this.taskService.updateTask(data, project));
   }
 
-  @Delete()
+  @Delete(':id')
   @PTURoles(PROJECT_USER_ROLE.SCRUM_MASTER, PROJECT_USER_ROLE.DEVELOPER)
-  async deleteTask(@Body() data: VTaskOpt, @PTUProject() project: Project) {
-    return await this.taskService.deleteTask(data, project);
+  async deleteTask(@Param('id', new ParseIntPipe()) id: number, @PTUProject() project: Project) {
+    return await this.taskService.deleteTask(id, project);
   }
 }

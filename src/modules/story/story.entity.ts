@@ -55,6 +55,9 @@ export class Story {
   @Column({ type: 'text', default: '' })
   acceptanceComments: string;
 
+  @Column({ type: 'text', default: '' })
+  rejectReason: string;
+
   constructor(data?: VStory) {
     if (data) {
       this.title = data.title;

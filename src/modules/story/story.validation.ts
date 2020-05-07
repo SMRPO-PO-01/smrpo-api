@@ -79,4 +79,12 @@ export class VStoryOpt {
   @IsOptional()
   @IsString()
   acceptanceComments: string;
+
+  @IsOptional()
+  @IsBoolean()
+  reject: boolean;
+
+  @IsOptional()
+  @IsString()
+  rejectReason: string;
 }

@@ -41,4 +41,10 @@ export class StoryService {
   async updateStory(data: VStoryOpt) {
     return await this.storyRepo.save(data);
   }
+
+  async rejectStory(data: VStoryOpt, story: Story) {
+    story.rejectReason = data.rejectReason;
+    story.sprints = [];
+    return await this.storyRepo.save(story);
+  }
 }

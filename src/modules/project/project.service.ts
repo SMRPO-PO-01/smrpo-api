@@ -35,6 +35,7 @@ export class ProjectService {
         'stories.tasks',
         'sprints',
         'sprints.stories',
+        'sprints.stories.tasks',
         'projectOwner',
         'scrumMaster',
         'developers',

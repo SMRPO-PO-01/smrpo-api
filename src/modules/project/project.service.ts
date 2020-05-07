@@ -32,6 +32,7 @@ export class ProjectService {
     const project = await this.projectRepo.findOne(id, {
       relations: [
         'stories',
+        'stories.tasks',
         'sprints',
         'sprints.stories',
         'projectOwner',

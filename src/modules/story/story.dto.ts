@@ -1,3 +1,4 @@
+import { TASK_STATE } from '../task/task-state.enum';
 import { STORY_PRIORITY } from './story-priority.enum';
 import { Story } from './story.entity';
 
@@ -12,6 +13,7 @@ export class DStory {
   accepted: boolean;
   projectId: number;
   acceptanceComments: string;
+  allTasksCompleted: boolean;
 
   constructor(story: Story) {
     this.id = story.id;
@@ -24,5 +26,12 @@ export class DStory {
     this.accepted = story.accepted;
     this.projectId = story.projectId;
     this.acceptanceComments = story.acceptanceComments;
+
+    if (story.tasks) {
+      this.allTasksCompleted = story.tasks.reduce(
+        (bool, task) => bool && task.state === TASK_STATE.DONE,
+        true,
+      );
+    }
   }
 }

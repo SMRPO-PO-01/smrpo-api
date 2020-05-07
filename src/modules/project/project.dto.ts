@@ -37,13 +37,15 @@ export class DProjectWithStories extends DProject {
 
     const activeSprint = project.sprints.find(sprint => sprint.isActive());
     if (activeSprint) {
-      this.sprint = activeSprint.stories.map(story => new DStory(story));
+      this.sprint = activeSprint.stories
+        .filter(story => !story.accepted)
+        .map(story => new DStory(story));
     }
 
-    this.backlog = project.stories.filter(
-      story => !this.sprint || !this.sprint.some(st => st.id === story.id),
-    );
+    this.backlog = project.stories
+      .filter(story => !this.sprint || !this.sprint.some(st => st.id === story.id))
+      .map(story => new DStory(story));
 
-    this.accepted = []; //TODO:
+    this.accepted = project.stories.filter(story => story.accepted).map(story => new DStory(story));
   }
 }

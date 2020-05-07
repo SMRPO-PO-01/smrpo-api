@@ -39,8 +39,10 @@ export class Sprint {
 
   isActive() {
     const today = new Date();
+    const endDate = new Date(this.endDate);
+    endDate.setDate(endDate.getDate() + 1);
 
-    return new Date(this.startDate) <= today && new Date(this.endDate) >= today;
+    return new Date(this.startDate) <= today && endDate > today;
   }
 
   constructor(data?: VSprint) {

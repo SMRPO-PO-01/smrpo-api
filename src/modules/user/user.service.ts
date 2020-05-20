@@ -15,7 +15,7 @@ export class UserService {
   async listAll({ skip, take }: Pagination, search = '') {
     const searchArr = search.split(' ');
 
-    return await this.userRepo.find({
+    return await this.userRepo.findAndCount({
       skip,
       take,
       order: { id: 'ASC' },

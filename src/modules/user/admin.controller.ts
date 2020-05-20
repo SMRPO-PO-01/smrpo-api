@@ -14,7 +14,8 @@ export class AdminController {
 
   @Get('users')
   async listAll(@Query() pagination: Pagination, @Query('search') search: string) {
-    return (await this.userService.listAll(pagination, search)).map(user => new DUser(user));
+    const [users, count] = await this.userService.listAll(pagination, search);
+    return { users: users.map(user => new DUser(user)), count };
   }
 
   @Post('add-user')

@@ -17,7 +17,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate({ username, password }) {
-    const user = await this.userRepo.findOne({ username, password });
+    const user = await this.userRepo.findOne({ username, password, deleted: false });
     if (!user) {
       throw new UnauthorizedException('Invalid token');
     }

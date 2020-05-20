@@ -2,10 +2,11 @@ import { ConflictException, Injectable, NotFoundException } from '@nestjs/common
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+import { hash } from '../../utils/hash';
 import { ILike } from '../../utils/ilike';
 import { Pagination } from '../../validators/pagination';
 import { User } from './user.entity';
-import { VUser } from './user.validation';
+import { VUser, VUserOpt } from './user.validation';
 
 @Injectable()
 export class UserService {
@@ -38,6 +39,34 @@ export class UserService {
     }
 
     return await this.userRepo.save(new User(data));
+  }
+
+  async editUser(id: number, data: VUserOpt) {
+    const user = await this.findById(id);
+
+    if (
+      data.username &&
+      user.username !== data.username &&
+      (await this.userRepo.findOne({ username: data.username }))
+    ) {
+      throw new ConflictException(`User with username ${data.username} already exists.`);
+    }
+
+    if (data.username) user.username = data.username;
+    if (data.password) user.password = hash(user.salt + data.password);
+    if (data.email) user.email = data.email;
+    if (data.firstName) user.firstName = data.firstName;
+    if (data.lastName) user.lastName = data.lastName;
+    if (data.role) user.role = data.role;
+
+    return await this.userRepo.save(user);
+  }
+
+  async deleteUser(id: number) {
+    const user = await this.findById(id);
+    user.deleted = !user.deleted;
+
+    return await this.userRepo.save(user);
   }
 
   async findByIds(ids: number[]) {

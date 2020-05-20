@@ -33,6 +33,9 @@ export class User {
   @Column()
   role: USER_ROLE;
 
+  @Column({ default: false })
+  deleted: boolean;
+
   @Column('timestamptz', { nullable: true })
   lastLoginTime: Date;
 

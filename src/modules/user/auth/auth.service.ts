@@ -15,7 +15,7 @@ export class AuthService {
   ) {}
 
   async login({ username, password }: VLogin) {
-    const user = await this.userRepo.findOne({ username });
+    const user = await this.userRepo.findOne({ username, deleted: false });
 
     if (!user) {
       throw new NotFoundException(`User ${username} not found.`);

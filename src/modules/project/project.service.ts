@@ -24,7 +24,7 @@ export class ProjectService {
       where: {
         title: ILike(`%${search}%`),
       },
-      relations: ['users', 'users.user'],
+      relations: ['projectOwner', 'scrumMaster', 'developers'],
     });
   }
 
@@ -63,6 +63,13 @@ export class ProjectService {
     return await this.projectRepo.save(project);
   }
 
+  async editProject(project: Project, data: VProject) {
+    const users = await this.validateProjectDataAndGetUsers(data, project);
+    const newProject = new Project({ ...data, ...users });
+    newProject.id = project.id;
+    return await this.projectRepo.save(newProject);
+  }
+
   async findById(id: number, options?: FindOneOptions<Project>) {
     const project = await this.projectRepo.findOne(id, options);
     if (!project) {
@@ -71,9 +78,11 @@ export class ProjectService {
     return project;
   }
 
-  private async validateProjectDataAndGetUsers(data: VProject) {
-    if (await this.projectRepo.findOne({ title: data.title })) {
-      throw new ConflictException(`Project with title ${data.title} already exists.`);
+  private async validateProjectDataAndGetUsers(data: VProject, project?: Project) {
+    if (!project || project.title !== data.title) {
+      if (await this.projectRepo.findOne({ title: data.title })) {
+        throw new ConflictException(`Project with title ${data.title} already exists.`);
+      }
     }
 
     const scrumMaster = await this.userService.findById(data.scrumMasterId);

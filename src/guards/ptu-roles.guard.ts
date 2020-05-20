@@ -10,12 +10,14 @@ import {
 import { Reflector } from '@nestjs/core';
 
 import { ProjectService } from '../modules/project/project.service';
+import { USER_ROLE } from '../modules/user/user-role.enum';
 import { User } from '../modules/user/user.entity';
 
 export enum PROJECT_USER_ROLE {
   PROJECT_OWNER = 'PROJECT_OWNER',
   SCRUM_MASTER = 'SCRUM_MASTER',
   DEVELOPER = 'DEVELOPER',
+  ADMIN = 'ADMIN',
 }
 
 @Injectable()
@@ -49,7 +51,8 @@ export class PTURolesGuard implements CanActivate {
       (roles.includes(PROJECT_USER_ROLE.DEVELOPER) &&
         project.developers.some(dev => dev.id === user.id)) ||
       (roles.includes(PROJECT_USER_ROLE.PROJECT_OWNER) && project.projectOwner.id === user.id) ||
-      (roles.includes(PROJECT_USER_ROLE.SCRUM_MASTER) && project.scrumMaster.id === user.id)
+      (roles.includes(PROJECT_USER_ROLE.SCRUM_MASTER) && project.scrumMaster.id === user.id) ||
+      (roles.includes(PROJECT_USER_ROLE.ADMIN) && user.role === USER_ROLE.ADMIN)
     ) {
       return true;
     } else {

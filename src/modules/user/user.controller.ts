@@ -6,7 +6,7 @@ import { AuthUser } from './auth/jwt.strategy';
 import { DUser } from './user.dto';
 import { User } from './user.entity';
 import { UserService } from './user.service';
-import { VUser } from './user.validation';
+import { VUser, VUserSelf } from './user.validation';
 
 @Controller('user')
 @UseGuards(AuthGuard('jwt'))
@@ -19,8 +19,8 @@ export class UserController {
   }
 
   @Put('me')
-  async updateMe(@AuthUser() { id }: User, @Body() data: VUser) {
-    const user = await this.userService.editUser(id, data);
+  async updateMe(@AuthUser() { id }: User, @Body() data: VUserSelf) {
+    const user = await this.userService.editUser(id, data as VUser);
     return new DUser(
       user,
       this.jwtService.sign({

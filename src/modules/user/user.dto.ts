@@ -10,6 +10,7 @@ export class DUser {
   role: USER_ROLE;
   lastLoginTime: Date;
   createdAt: Date;
+  deleted: boolean;
 
   token: string;
 
@@ -22,6 +23,7 @@ export class DUser {
     this.role = user.role;
     this.lastLoginTime = user.lastLoginTime;
     this.createdAt = user.createdAt;
+    this.deleted = user.deleted;
     this.token = token;
   }
 }

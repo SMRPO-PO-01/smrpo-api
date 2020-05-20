@@ -1,16 +1,18 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 import { AdminGuard } from '../../guards/admin.guard';
+import { PROJECT_USER_ROLE, PTUProject, PTURoles, PTURolesGuard } from '../../guards/ptu-roles.guard';
 import { Pagination } from '../../validators/pagination';
 import { AuthUser } from '../user/auth/jwt.strategy';
 import { User } from '../user/user.entity';
 import { DProject, DProjectWithStories } from './project.dto';
+import { Project } from './project.entity';
 import { ProjectService } from './project.service';
 import { VProject } from './project.validation';
 
 @Controller()
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'), PTURolesGuard)
 export class ProjectController {
   constructor(private projectService: ProjectService) {}
 
@@ -18,6 +20,12 @@ export class ProjectController {
   @UseGuards(AdminGuard)
   async createProject(@Body() data: VProject) {
     return new DProject(await this.projectService.createProject(data));
+  }
+
+  @Put(':projectId')
+  @PTURoles(PROJECT_USER_ROLE.SCRUM_MASTER, PROJECT_USER_ROLE.ADMIN)
+  async editProject(@Body() data: VProject, @PTUProject() project: Project) {
+    return new DProject(await this.projectService.editProject(project, data));
   }
 
   @Get('all')

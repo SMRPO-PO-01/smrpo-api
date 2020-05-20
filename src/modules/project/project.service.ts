@@ -17,7 +17,7 @@ export class ProjectService {
   ) {}
 
   async listAll({ skip, take }: Pagination, search: string) {
-    return await this.projectRepo.find({
+    return await this.projectRepo.findAndCount({
       order: { id: 'DESC' },
       take,
       skip,

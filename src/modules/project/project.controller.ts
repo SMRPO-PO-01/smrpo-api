@@ -31,9 +31,8 @@ export class ProjectController {
   @Get('all')
   @UseGuards(AdminGuard)
   async listAll(@Query() pagination: Pagination, @Query('search') search: string) {
-    return (await this.projectService.listAll(pagination, search)).map(
-      project => new DProject(project),
-    );
+    const [projects, count] = await this.projectService.listAll(pagination, search);
+    return { projects: projects.map(project => new DProject(project)), count };
   }
 
   @Get('my')

@@ -26,6 +26,28 @@ export class VUser {
   role: USER_ROLE;
 }
 
+export class VUserSelf {
+  @IsString()
+  @IsNotEmpty()
+  username: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  password: string;
+
+  @IsString()
+  @IsNotEmpty()
+  firstName: string;
+
+  @IsString()
+  @IsNotEmpty()
+  lastName: string;
+
+  @IsEmail()
+  email: string;
+}
+
 export class VUserOpt {
   @IsString()
   @IsNotEmpty()

@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Put, Query, UseGuards } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
 
+import { Pagination } from '../../validators/pagination';
 import { AuthUser } from './auth/jwt.strategy';
 import { DUser } from './user.dto';
 import { User } from './user.entity';
@@ -16,6 +17,12 @@ export class UserController {
   @Get('me')
   async getMe(@AuthUser() user: User) {
     return new DUser(user);
+  }
+
+  @Get('list-all')
+  async listAll(@Query() pagination: Pagination, @Query('search') search: string) {
+    const [users, count] = await this.userService.listAll(pagination, search);
+    return { users: users.map(user => new DUser(user)), count };
   }
 
   @Put('me')

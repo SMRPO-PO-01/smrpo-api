@@ -67,12 +67,7 @@ export class SprintController {
 
   @Put()
   @PTURoles(PROJECT_USER_ROLE.SCRUM_MASTER)
-  async updateSprint(
-    // @Param('id', new ParseIntPipe()) id: number,
-    @Body() data: { id: number } & VSprint,
-    @PTUProject() project: Project,
-  ) {
-    console.log(data);
+  async updateSprint(@Body() data: { id: number } & VSprint, @PTUProject() project: Project) {
     data.project = project;
     return new DSprint(await this.sprintService.updateSprint(data));
   }

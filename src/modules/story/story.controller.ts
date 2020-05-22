@@ -2,16 +2,24 @@ import {
   Body,
   ConflictException,
   Controller,
+  Delete,
   ForbiddenException,
   Get,
   NotFoundException,
+  Param,
+  ParseIntPipe,
   Post,
   Put,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
-import { PROJECT_USER_ROLE, PTUProject, PTURoles, PTURolesGuard } from '../../guards/ptu-roles.guard';
+import {
+  PROJECT_USER_ROLE,
+  PTUProject,
+  PTURoles,
+  PTURolesGuard,
+} from '../../guards/ptu-roles.guard';
 import { Project } from '../project/project.entity';
 import { TASK_STATE } from '../task/task-state.enum';
 import { AuthUser } from '../user/auth/jwt.strategy';
@@ -54,8 +62,8 @@ export class StoryController {
     @AuthUser() user: User,
     @PTUProject() project: Project,
   ) {
-    const story = await this.storyService.findById(data.id);
-    if (!story || story.projectId !== project.id) {
+    const story = await this.storyService.findById(data.id, project.id);
+    if (!story) {
       throw new NotFoundException(`Story with id ${story.id} not found!`);
     }
 
@@ -63,12 +71,11 @@ export class StoryController {
       throw new ForbiddenException(`Only scrum master can change the size of the story`);
     }
 
-    const currentSprint = story.sprints.find(sprint => sprint.isActive());
-
     if (data.reject && story.project.projectOwner.id === user.id) {
       return new DStory(await this.storyService.rejectStory(data, story));
     }
 
+    const currentSprint = story.sprints.find(sprint => sprint.isActive());
     if (
       currentSprint &&
       !(
@@ -87,5 +94,24 @@ export class StoryController {
     }
 
     return new DStory(await this.storyService.updateStory(data));
+  }
+
+  @Delete(':id')
+  @PTURoles(PROJECT_USER_ROLE.SCRUM_MASTER, PROJECT_USER_ROLE.PROJECT_OWNER)
+  async deleteStory(@Param('id', new ParseIntPipe()) id: number, @PTUProject() project: Project) {
+    const story = await this.storyService.findById(id, project.id);
+    if (!story) {
+      throw new NotFoundException(`Story with id ${id} not found.`);
+    }
+    if (story.tasks.every(task => task.state === TASK_STATE.DONE)) {
+      throw new ConflictException(`Completed story cannot be deleted.`);
+    }
+
+    const currentSprint = story.sprints.find(sprint => sprint.isActive());
+    if (currentSprint) {
+      throw new ConflictException(`Story in an active sprint cannot be deleted.`);
+    }
+
+    return await this.storyService.deleteStory(id);
   }
 }

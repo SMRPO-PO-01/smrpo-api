@@ -21,8 +21,12 @@ export class StoryService {
     return await this.storyRepo.find({ where: { projectId }, order: { id: 'ASC' } });
   }
 
-  async findById(id: number) {
-    return await this.storyRepo.findOne(id, {
+  async findById(id: number, projectId?: number) {
+    const story: any = { id };
+    if (projectId) {
+      story.projectId = projectId;
+    }
+    return await this.storyRepo.findOne(story, {
       relations: [
         'project',
         'sprints',
@@ -46,5 +50,9 @@ export class StoryService {
     story.rejectReason = data.rejectReason;
     story.sprints = [];
     return await this.storyRepo.save(story);
+  }
+
+  async deleteStory(id: number) {
+    return await this.storyRepo.delete(id);
   }
 }

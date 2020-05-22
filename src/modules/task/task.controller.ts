@@ -4,6 +4,7 @@ import {
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
   ParseIntPipe,
   Post,
@@ -60,12 +61,10 @@ export class TaskController {
   }
 
   @Put()
-  @PTURoles(PROJECT_USER_ROLE.DEVELOPER)
+  @PTURoles(PROJECT_USER_ROLE.SCRUM_MASTER, PROJECT_USER_ROLE.DEVELOPER)
   async updateTask(@Body() data: VTaskOpt, @PTUProject() project: Project, @AuthUser() user: User) {
-    const task = await this.taskService.findById(data.id);
-    if (task.userId && task.userId !== user.id) {
-      throw new ConflictException(`You can only edit your own tasks`);
-    }
+    await this.checkTaskRolePermissions(data.id, project, user);
+
     if (data.state === TASK_STATE.UNASSIGNED) {
       data.userId = null;
     } else if (data.state) {
@@ -76,12 +75,33 @@ export class TaskController {
         throw new ConflictException(`You can only change state of your own tasks`);
       }
     }
-    return new DTask(await this.taskService.updateTask(data, project));
+
+    return new DTask(await this.taskService.updateTask(data));
   }
 
   @Delete(':id')
   @PTURoles(PROJECT_USER_ROLE.SCRUM_MASTER, PROJECT_USER_ROLE.DEVELOPER)
-  async deleteTask(@Param('id', new ParseIntPipe()) id: number, @PTUProject() project: Project) {
-    return await this.taskService.deleteTask(id, project);
+  async deleteTask(
+    @Param('id', new ParseIntPipe()) id: number,
+    @PTUProject() project: Project,
+    @AuthUser() user: User,
+  ) {
+    const task = await this.checkTaskRolePermissions(id, project, user);
+    if (task.state !== TASK_STATE.UNASSIGNED) {
+      throw new ConflictException(`Cannot delete already assigned tasks.`);
+    }
+
+    return await this.taskService.deleteTask(id);
+  }
+
+  private async checkTaskRolePermissions(id: number, project: Project, user: User) {
+    const task = await this.taskService.findById(id, project.id);
+    if (!task) {
+      throw new NotFoundException(`Task with id ${id} not found in current project.`);
+    }
+    if (task.userId && project.scrumMaster.id !== user.id && task.userId !== user.id) {
+      throw new ConflictException(`You can only edit your own tasks.`);
+    }
+    return task;
   }
 }

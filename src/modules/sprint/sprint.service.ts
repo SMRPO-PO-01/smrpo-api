@@ -1,4 +1,10 @@
-import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 
@@ -30,7 +36,7 @@ export class SprintService {
   }
 
   async createSprint(data: VSprint) {
-    await this.checkOverlaping(data);
+    await this.checkOverlapping(data);
     return await this.sprintRepo.save(new Sprint(data));
   }
 
@@ -70,14 +76,42 @@ export class SprintService {
     return await this.sprintRepo.save(sprint);
   }
 
-  private async checkOverlaping(data: VSprint) {
-    if (
-      await this.sprintRepo.findOne({
-        projectId: data.project.id,
-        endDate: MoreThanOrEqual(data.startDate),
-        startDate: LessThanOrEqual(data.endDate),
-      })
-    ) {
+  async updateSprint(data: { id: number } & VSprint) {
+    await Promise.all([
+      this.checkExistsAndNotActive(data.id, data.project.id),
+      this.checkOverlapping(data),
+    ]);
+
+    return await this.sprintRepo.save(data);
+  }
+
+  async deleteSprint(id: number, project: Project) {
+    await this.checkExistsAndNotActive(id, project.id);
+    return await this.sprintRepo.delete(id);
+  }
+
+  private async checkExistsAndNotActive(id: number, projectId: number) {
+    const sprint = await this.sprintRepo.findOne({ id: id, projectId: projectId });
+    if (!sprint) {
+      throw new NotFoundException(`Sprint with id ${id} doesn't exist.`);
+    }
+    if (sprint.isActive()) {
+      throw new ConflictException(`Cannot edit an active sprint.`);
+    }
+  }
+
+  private async checkOverlapping(data: { id?: number } & VSprint) {
+    const startDate = new Date(data.startDate);
+    const endDate = new Date(data.endDate);
+    if (endDate < startDate || endDate < new Date()) {
+      throw new ConflictException(`End date should be after the start date and after today.`);
+    }
+    const sprint = await this.sprintRepo.findOne({
+      projectId: data.project.id,
+      endDate: MoreThanOrEqual(data.startDate),
+      startDate: LessThanOrEqual(data.endDate),
+    });
+    if (sprint && data.id !== sprint.id) {
       throw new ConflictException('Sprint overlaps with one or more existing sprints');
     }
   }

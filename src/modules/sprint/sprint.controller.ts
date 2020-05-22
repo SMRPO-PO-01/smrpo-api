@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 import {
@@ -53,5 +63,23 @@ export class SprintController {
     @PTUProject() project: Project,
   ) {
     return new DSprint(await this.sprintService.addStoriesToSprint(sprintId, stories, project));
+  }
+
+  @Put()
+  @PTURoles(PROJECT_USER_ROLE.SCRUM_MASTER)
+  async updateSprint(
+    // @Param('id', new ParseIntPipe()) id: number,
+    @Body() data: { id: number } & VSprint,
+    @PTUProject() project: Project,
+  ) {
+    console.log(data);
+    data.project = project;
+    return new DSprint(await this.sprintService.updateSprint(data));
+  }
+
+  @Delete(':id')
+  @PTURoles(PROJECT_USER_ROLE.SCRUM_MASTER)
+  async deleteSprint(@Param('id', new ParseIntPipe()) id: number, @PTUProject() project: Project) {
+    return await this.sprintService.deleteSprint(id, project);
   }
 }

@@ -71,9 +71,9 @@ export class TaskController {
       if (!data.userId) {
         data.userId = user.id;
       }
-      if (data.userId !== user.id) {
-        throw new ConflictException(`You can only change state of your own tasks`);
-      }
+      // if (data.userId !== user.id) {
+      //   throw new ConflictException(`You can only change state of your own tasks`);
+      // }
     }
 
     return new DTask(await this.taskService.updateTask(data));

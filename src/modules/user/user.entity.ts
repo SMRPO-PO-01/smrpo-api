@@ -1,15 +1,9 @@
 import { randomBytes } from 'crypto';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToMany,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { hash } from '../../utils/hash';
 import { Project } from '../project/project.entity';
+import { TaskTime } from '../task-time/task-time.entity';
 import { Task } from '../task/task.entity';
 import { USER_ROLE } from './user-role.enum';
 import { VUser } from './user.validation';
@@ -76,6 +70,12 @@ export class User {
     { nullable: true },
   )
   tasks: Task[];
+
+  @OneToMany(
+    () => TaskTime,
+    tt => tt.task,
+  )
+  taskTimes: TaskTime[];
 
   constructor(user?: VUser) {
     if (user) {

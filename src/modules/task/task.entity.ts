@@ -1,7 +1,8 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Project } from '../project/project.entity';
 import { Story } from '../story/story.entity';
+import { TaskTime } from '../task-time/task-time.entity';
 import { User } from '../user/user.entity';
 import { TASK_STATE } from './task-state.enum';
 import { VTask } from './task.validation';
@@ -54,6 +55,12 @@ export class Task {
 
   @Column({ nullable: true })
   size: number;
+
+  @OneToMany(
+    () => TaskTime,
+    tt => tt.task,
+  )
+  taskTimes: TaskTime[];
 
   constructor(task?: VTask) {
     if (task) {

@@ -41,6 +41,10 @@ export class TaskTimeService {
     return await this.taskTimeRepo.save(taskTime);
   }
 
+  async getAllForTask(task: Task) {
+    return await this.taskTimeRepo.find({ taskId: task.id });
+  }
+
   private async findOrCreateTaskTime(date: Date, task: Task, user: User) {
     return (
       (await this.taskTimeRepo.findOne({ date, taskId: task.id, userId: user.id })) ||

@@ -11,6 +11,7 @@ export class DTask {
   userId: number;
   storyId: number;
   size: number;
+  time: number;
 
   constructor(task: Task) {
     this.id = task.id;
@@ -22,5 +23,9 @@ export class DTask {
     this.userId = task.userId;
     this.storyId = task.storyId;
     this.size = task.size;
+
+    if (task.taskTimes) {
+      this.time = task.taskTimes.reduce((acc, tt) => acc + tt.time, 0);
+    }
   }
 }

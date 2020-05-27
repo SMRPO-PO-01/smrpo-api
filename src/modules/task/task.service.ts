@@ -4,9 +4,10 @@ import { Repository } from 'typeorm';
 
 import { ILike } from '../../utils/ilike';
 import { Pagination } from '../../validators/pagination';
+import { StoryService } from '../story/story.service';
+import { TASK_STATE } from './task-state.enum';
 import { Task } from './task.entity';
 import { VTask, VTaskOpt } from './task.validation';
-import { StoryService } from '../story/story.service';
 
 @Injectable()
 export class TaskService {
@@ -46,6 +47,7 @@ export class TaskService {
       skip,
       take,
       where,
+      relations: ['taskTimes'],
     });
   }
 
@@ -73,5 +75,9 @@ export class TaskService {
 
   async deleteTask(id: number) {
     return await this.taskRepo.delete(id);
+  }
+
+  async changeActiveToAssigned() {
+    await this.taskRepo.update({ state: TASK_STATE.ACTIVE }, { state: TASK_STATE.ASSIGNED });
   }
 }

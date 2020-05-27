@@ -1,7 +1,20 @@
-import { BadRequestException, Controller, NotFoundException, Param, ParseIntPipe, Put, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  NotFoundException,
+  Param,
+  ParseIntPipe,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
-import { PROJECT_USER_ROLE, PTUProject, PTURoles, PTURolesGuard } from '../../guards/ptu-roles.guard';
+import {
+  PROJECT_USER_ROLE,
+  PTUProject,
+  PTURoles,
+  PTURolesGuard,
+} from '../../guards/ptu-roles.guard';
 import { Project } from '../project/project.entity';
 import { TASK_STATE } from '../task/task-state.enum';
 import { DTask } from '../task/task.dto';
@@ -61,7 +74,7 @@ export class TaskTimeController {
     await this.taskService.updateTask(task);
 
     task.taskTimes = await this.taskTimeService.getAllForTask(task);
-      
+
     return new DTask(task);
   }
 }

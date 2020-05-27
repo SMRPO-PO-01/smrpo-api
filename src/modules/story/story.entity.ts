@@ -46,6 +46,7 @@ export class Story {
   @OneToMany(
     () => Task,
     task => task.story,
+    { onDelete: 'CASCADE' },
   )
   tasks: Task[];
 

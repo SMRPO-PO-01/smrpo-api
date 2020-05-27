@@ -61,7 +61,7 @@ export class TaskTimeController {
     await this.taskService.updateTask(task);
 
     task.taskTimes = await this.taskTimeService.getAllForTask(task);
-
+      
     return new DTask(task);
   }
 }

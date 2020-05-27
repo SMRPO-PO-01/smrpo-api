@@ -65,17 +65,6 @@ export class TaskController {
   async updateTask(@Body() data: VTaskOpt, @PTUProject() project: Project, @AuthUser() user: User) {
     await this.checkTaskRolePermissions(data.id, project, user);
 
-    if (data.state === TASK_STATE.UNASSIGNED) {
-      data.userId = null;
-    } else if (data.state) {
-      if (!data.userId) {
-        data.userId = user.id;
-      }
-      // if (data.userId !== user.id) {
-      //   throw new ConflictException(`You can only change state of your own tasks`);
-      // }
-    }
-
     return new DTask(await this.taskService.updateTask(data));
   }
 

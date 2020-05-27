@@ -36,7 +36,7 @@ export class Task {
   @ManyToOne(
     () => Story,
     story => story.tasks,
-    { nullable: true },
+    { nullable: true, onDelete: 'CASCADE' },
   )
   story: Story;
 

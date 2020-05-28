@@ -66,7 +66,6 @@ export class Task {
   @OneToMany(
     () => TaskTime,
     tt => tt.task,
-    { onDelete: 'CASCADE' },
   )
   taskTimes: TaskTime[];
 

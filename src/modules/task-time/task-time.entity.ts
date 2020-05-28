@@ -22,6 +22,7 @@ export class TaskTime {
   @ManyToOne(
     () => Task,
     t => t.taskTimes,
+    { onDelete: 'CASCADE' },
   )
   task: Task;
 
@@ -30,6 +31,7 @@ export class TaskTime {
   @ManyToOne(
     () => User,
     u => u.taskTimes,
+    { onDelete: 'CASCADE' },
   )
   user: User;
 

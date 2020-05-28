@@ -81,7 +81,8 @@ export class StoryController {
       !(
         (data.accepted || data.acceptanceComments) &&
         story.project.projectOwner.id === user.id &&
-        !story.tasks.some(task => task.state !== TASK_STATE.DONE)
+        story.tasks.length > 0 &&
+        story.tasks.every(task => task.state == TASK_STATE.DONE)
       )
     ) {
       throw new ConflictException(
@@ -103,7 +104,7 @@ export class StoryController {
     if (!story) {
       throw new NotFoundException(`Story with id ${id} not found.`);
     }
-    if (!story.tasks.some(task => task.state !== TASK_STATE.DONE)) {
+    if (story.tasks.length > 0 && story.tasks.every(task => task.state == TASK_STATE.DONE)) {
       throw new ConflictException(`Completed story cannot be deleted.`);
     }
 
